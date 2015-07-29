@@ -4,9 +4,11 @@ python:
 - 2.7
 - 3.3
 - 3.4
+install:
+- if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install unittest2; fi
+- pip install -r requirements.txt -r test-requirements.txt
+script: nosetests
 notifications:
   email: false
-install:
- - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install unittest2; fi
- - pip install -r requirements.txt -r test-requirements.txt
-script: nosetests
+  slack:
+    secure: G1zK/RMtFuY1PSN/uydkzO0cF4lhjbEwZtt9oIizz2ZXiTHI8sQ36D6NH4el5dDoxnyL1W13ASSzyRMHThyLfX7hugaMF7CKDvzk0w28opdZfcr/LSkU/Hyu+RLg2S+2VKIbXdJqMq5aYWejSy/BICu/tEzNp9wWiC9dIjndiDB4L4bdkG0B7kKrwYwWR99+7h+CWpmIoZgWHIf6PY//JG9iUoNAawAUb76JLJ4TW60kdBS2vuls0H5QRAl+Xw4waAuajTdMzHkserNWP0YHm/bArWZvxW4lvYe7qiMG6Ihs/PtqIw9NYGBahF6AmYBlBOqcYd7A+bBfhS/pGTmswgyu1shLa/+yYbHp871sKFRroOHC4b8TdpRP3S9LfBGprbq4SfRhlV6yB984c2BirZ6VOs3RwH4mQVMybSCKSs5Q1pvbtvNu6bIN111rmABXLuhSZMcECy0rQn05NlO6xIZIClnMacFRSUxXUaGEnUDuUlquTKZlwOFL8b2wvQj0GcWJFaq5V3zlU22IvJNm9PtlQxVkLO9gjDz5hiQfohJFyl6dHPuOF+CNUGBt1Z4hsBaNdb/Dz+sT/bPG7pUbbqniBkBpjrzfPCgEeKQs9jpT+zfZth+HJj6ycSIqi3NAsIifMvIUqNzDDQvgC8bZ/+NNrz0Q9d4y28DjhqV5eOU=
