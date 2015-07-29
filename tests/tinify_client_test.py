@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import sys
 from base64 import b64encode
 
 from tinify import Tinify, Client, AccountError, ClientError, ConnectionError, ServerError
@@ -23,7 +24,7 @@ class TinifyClientRequestWhenValid(TestHelper):
     def test_should_issue_request(self):
         Client('key').request('GET', '/')
 
-        self.assertEqual(self.request.headers['authorization'], 'Basic {}'.format(
+        self.assertEqual(self.request.headers['authorization'], 'Basic {0}'.format(
            b64encode(b'api:key').decode('ascii')))
 
     def test_should_issue_request_with_json_body(self):
@@ -91,7 +92,7 @@ class TinifyClientRequestWithBadServerResponse(TestHelper):
 
         with self.assertRaises(ServerError) as context:
             Client('key').request('GET', '/')
-        if six.PY2:
+        if sys.version_info < (3,4):
             msg = 'Error while parsing response: No JSON object could be decoded (HTTP 543/ParseError)'
         else:
             msg = 'Error while parsing response: Expecting value: line 1 column 1 (char 0) (HTTP 543/ParseError)'

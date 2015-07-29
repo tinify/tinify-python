@@ -15,7 +15,7 @@ class TinifyKey(TestHelper):
         Tinify.client
         tinify.set_key('fghij')
         Tinify.client.request('GET', '/')
-        self.assertEqual(self.request.headers['authorization'], 'Basic {}'.format(
+        self.assertEqual(self.request.headers['authorization'], 'Basic {0}'.format(
            b64encode(b'api:fghij').decode('ascii')))
 
 class TinifyClient(TestHelper):

@@ -24,7 +24,7 @@ class Error(Exception):
 
     def __str__(self):
         if self.status:
-            return '{} (HTTP {:d}/{})'.format(self.message, self.status, self.kind)
+            return '{0} (HTTP {1:d}/{2})'.format(self.message, self.status, self.kind)
         else:
             return self.message
 

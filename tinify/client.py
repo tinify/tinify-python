@@ -12,7 +12,7 @@ from .errors import ConnectionError, Error
 
 class Client(object):
     API_ENDPOINT = 'https://api.tinify.com'
-    USER_AGENT = 'Tinify/{} {}/{}'.format(Tinify.VERSION, platform.python_implementation(), platform.python_version())
+    USER_AGENT = 'Tinify/{0} {1}/{2}'.format(Tinify.VERSION, platform.python_implementation(), platform.python_version())
 
     def __init__(self, key, app_identifier=None):
       self.session = requests.sessions.Session()
@@ -44,7 +44,7 @@ class Client(object):
       except requests.exceptions.Timeout as err:
         six.raise_from(ConnectionError('Timeout while connecting'), err)
       except Exception as err:
-        six.raise_from(ConnectionError('Error while connecting: {}'.format(err)), err)
+        six.raise_from(ConnectionError('Error while connecting: {0}'.format(err)), err)
 
       count = response.headers.get('compression-count')
       if count:
@@ -57,5 +57,5 @@ class Client(object):
         try:
           details = response.json()
         except Exception as err:
-          details = { 'message': 'Error while parsing response: {}'.format(err), 'error': 'ParseError' }
+          details = { 'message': 'Error while parsing response: {0}'.format(err), 'error': 'ParseError' }
         raise Error.create(details.get('message'), details.get('error'), response.status_code)
