@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
 import platform
 import requests
 import requests.exceptions
@@ -20,7 +21,7 @@ class Client(object):
       self.session.headers = {
         'user-agent': self.USER_AGENT + ' ' + app_identifier if app_identifier else self.USER_AGENT,
       }
-      self.session.verify = True
+      self.session.verify = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cacert.pem')
 
     def __enter__(self):
       return self

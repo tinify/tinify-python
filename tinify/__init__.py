@@ -13,6 +13,7 @@ class TinifyMeta(type):
 
     cls.app_identifier = None
     cls.compression_count = None
+    cls._key = None
     cls.VERSION = __version__
 
   @property
