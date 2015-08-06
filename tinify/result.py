@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from . import Tinify
+from . import ResultMeta
 
-class Result(object):
+class Result(ResultMeta):
     def __init__(self, meta, data):
-        self.meta = meta
+        ResultMeta.__init__(self, meta)
         self.data = data
 
     def to_file(self, path):
@@ -19,24 +19,17 @@ class Result(object):
         return self.data
 
     @property
-    def width(self):
-        return int(self.meta['Image-Width'])
-
-    @property
-    def height(self):
-        return int(self.meta['Image-Height'])
-
-    @property
     def size(self):
-        return int(self.meta['Content-Length'])
-
-    def __len__(self):
-        return self.size
+        return int(self._meta['Content-Length'])
 
     @property
     def media_type(self):
-        return self.meta['Content-Type']
+        return self._meta['Content-Type']
 
     @property
     def content_type(self):
         return self.media_type
+
+    @property
+    def location(self):
+        return None

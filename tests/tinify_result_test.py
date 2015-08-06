@@ -31,3 +31,6 @@ class TinifyResultWithMetaAndDataTest(TestHelper):
 
   def test_data_should_return_image_data(self):
     self.assertEqual(b'image data', self.result.data)
+
+  def test_location_should_return_none(self):
+    self.assertEqual(None, self.result.location)

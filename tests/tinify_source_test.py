@@ -5,7 +5,7 @@ import os
 import json
 import tempfile
 
-from tinify import Tinify, Source, Result, AccountError
+from tinify import Tinify, Source, Result, ResultMeta, AccountError
 
 from . import *
 
@@ -78,12 +78,12 @@ class TinifySourceWithValidApiKey(TestHelper):
     def test_resize_should_return_source_with_data(self):
         self.assertEqual(b'small file', Source.from_buffer('png file').resize(width=400).to_buffer())
 
-    def test_store_should_return_result(self):
-        self.assertIsInstance(Source.from_buffer('png file').store(), Result)
+    def test_store_should_return_result_meta(self):
+        self.assertIsInstance(Source.from_buffer('png file').store(), ResultMeta)
 
     def test_store_should_return_result_with_location(self):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location',
-            Source.from_buffer('png file').store(service='s3').meta['location'])
+            Source.from_buffer('png file').store(service='s3').location)
 
     def test_to_buffer_should_return_image_data(self):
         self.assertEqual(b'compressed file', Source.from_buffer('png file').to_buffer())

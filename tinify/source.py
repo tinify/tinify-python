@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from . import Tinify
-from .result import Result
+from . import Tinify, Result, ResultMeta
 
 class Source(object):
     @classmethod
@@ -31,7 +30,7 @@ class Source(object):
 
     def store(self, **options):
         response = Tinify.client.request('POST', self.url, self._merge_commands(store=options))
-        return Result(response.headers, response.content)
+        return ResultMeta(response.headers)
 
     def result(self):
         response = Tinify.client.request('GET', self.url, self.commands)

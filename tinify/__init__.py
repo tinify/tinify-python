@@ -41,6 +41,7 @@ class Tinify(object):
   pass
 
 from .client import Client
+from .result_meta import ResultMeta
 from .result import Result
 from .source import Source
 from .errors import *
