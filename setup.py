@@ -32,8 +32,10 @@ setup(
     url='https://tinify.com/developers',
 
     packages=['tinify'],
-    package_data={'': ['LICENSE', 'README.md'] },
-    package_dir={'tinify': 'tinify'},
+    package_data={
+        '': ['LICENSE', 'README.md'],
+        'tinify': ['data/cacert.pem'],
+    },
 
     install_requires=['requests','six'],
     tests_require=tests_require,
