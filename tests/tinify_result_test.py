@@ -20,6 +20,9 @@ class TinifyResultWithMetaAndDataTest(TestHelper):
   def test_height_should_return_image_height(self):
     self.assertEqual(60, self.result.height)
 
+  def test_location_should_return_none(self):
+    self.assertEqual(None, self.result.location)
+
   def test_size_should_return_content_length(self):
     self.assertEqual(450, self.result.size)
 
@@ -29,8 +32,5 @@ class TinifyResultWithMetaAndDataTest(TestHelper):
   def test_content_type_should_return_mime_type(self):
     self.assertEqual('image/png', self.result.content_type)
 
-  def test_data_should_return_image_data(self):
-    self.assertEqual(b'image data', self.result.data)
-
-  def test_location_should_return_none(self):
-    self.assertEqual(None, self.result.location)
+  def test_to_buffer_should_return_image_data(self):
+    self.assertEqual(b'image data', self.result.to_buffer())
