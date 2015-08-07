@@ -28,7 +28,7 @@ setup(
     author='Jacob Middag',
     author_email='jacobmiddag@voormedia.com',
     license='MIT',
-    long_description='Official Tinify API client. Compress JPEG and PNG files via Tinify API.',
+    long_description='Python client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.',
     url='https://tinify.com/developers',
 
     packages=['tinify'],
