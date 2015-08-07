@@ -7,47 +7,47 @@ import threading
 import six
 
 class TinifyMeta(type):
-  def __init__(cls, name, bases, dct):
-    cls._client = None
-    cls._lock = threading.RLock()
+    def __init__(cls, name, bases, dct):
+        cls._client = None
+        cls._lock = threading.RLock()
 
-    cls._key = None
-    cls._app_identifier = None
-    cls.compression_count = None
-    cls.VERSION = __version__
+        cls._key = None
+        cls._app_identifier = None
+        cls.compression_count = None
+        cls.VERSION = __version__
 
-  @property
-  def key(cls):
-    return cls._key
+    @property
+    def key(cls):
+        return cls._key
 
-  @key.setter
-  def key(cls, key):
-    cls._key = key
-    cls._client = None
+    @key.setter
+    def key(cls, key):
+        cls._key = key
+        cls._client = None
 
-  @property
-  def app_identifier(cls):
-    return cls._app_identifier
+    @property
+    def app_identifier(cls):
+        return cls._app_identifier
 
-  @app_identifier.setter
-  def app_identifier(cls, app_identifier):
-    cls._app_identifier = app_identifier
-    cls._client = None
+    @app_identifier.setter
+    def app_identifier(cls, app_identifier):
+        cls._app_identifier = app_identifier
+        cls._client = None
 
-  @property
-  def client(cls):
-    if not cls._key:
-      raise AccountError('Provide an API key with Tinify.key = ...')
+    @property
+    def client(cls):
+        if not cls._key:
+            raise AccountError('Provide an API key with Tinify.key = ...')
 
-    if not cls._client:
-      with cls._lock:
-        cls._client = Client(cls._key, cls.app_identifier)
+        if not cls._client:
+            with cls._lock:
+                cls._client = Client(cls._key, cls.app_identifier)
 
-    return cls._client
+        return cls._client
 
 @six.add_metaclass(TinifyMeta)
 class Tinify(object):
-  pass
+    pass
 
 from .client import Client
 from .result_meta import ResultMeta
@@ -56,16 +56,16 @@ from .source import Source
 from .errors import *
 
 def set_key(key):
-  Tinify.key = key
+    Tinify.key = key
 
 def set_app_identifier(app_identifier):
-  Tinify.app_identifier = app_identifier
+    Tinify.app_identifier = app_identifier
 
 def from_file(path):
-  return Source.from_file(path)
+    return Source.from_file(path)
 
 def from_buffer(string):
-  return Source.from_buffer(string)
+    return Source.from_buffer(string)
 
 def validate():
     try:
