@@ -11,19 +11,28 @@ class TinifyMeta(type):
     cls._client = None
     cls._lock = threading.RLock()
 
-    cls.app_identifier = None
-    cls.compression_count = None
     cls._key = None
+    cls._app_identifier = None
+    cls.compression_count = None
     cls.VERSION = __version__
 
   @property
   def key(cls):
-      return cls._key
+    return cls._key
 
   @key.setter
   def key(cls, key):
-    cls._client = None
     cls._key = key
+    cls._client = None
+
+  @property
+  def app_identifier(cls):
+    return cls._app_identifier
+
+  @app_identifier.setter
+  def app_identifier(cls, app_identifier):
+    cls._app_identifier = app_identifier
+    cls._client = None
 
   @property
   def client(cls):

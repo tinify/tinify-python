@@ -18,6 +18,16 @@ class TinifyKey(TestHelper):
         self.assertEqual(self.request.headers['authorization'], 'Basic {0}'.format(
            b64encode(b'api:fghij').decode('ascii')))
 
+class TinifyAppIdentifier(TestHelper):
+    def test_should_reset_client_with_new_app_identifier(self):
+        httpretty.register_uri(httpretty.GET, 'https://api.tinify.com/')
+        tinify.set_key('abcde')
+        tinify.set_app_identifier('MyApp/1.0')
+        Tinify.client
+        tinify.set_app_identifier('MyApp/2.0')
+        Tinify.client.request('GET', '/')
+        self.assertEqual(self.request.headers['user-agent'], tinify.Client.USER_AGENT + " MyApp/2.0")
+
 class TinifyClient(TestHelper):
     def test_with_key_should_return_client(self):
         tinify.set_key('abcde')
