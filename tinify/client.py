@@ -13,7 +13,7 @@ from .errors import ConnectionError, Error
 
 class Client(object):
     API_ENDPOINT = 'https://api.tinify.com'
-    USER_AGENT = 'Tinify/{0} {1}/{2}'.format(Tinify.VERSION, platform.python_implementation(), platform.python_version())
+    USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(Tinify.VERSION, platform.python_version(), platform.python_implementation())
 
     def __init__(self, key, app_identifier=None):
         self.session = requests.sessions.Session()
