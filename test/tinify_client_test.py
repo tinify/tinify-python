@@ -97,11 +97,9 @@ class TinifyClientRequestWithBadServerResponse(TestHelper):
 
         with self.assertRaises(ServerError) as context:
             Client('key').request('GET', '/')
-        if sys.version_info < (3,4):
-            msg = 'Error while parsing response: No JSON object could be decoded (HTTP 543/ParseError)'
-        else:
-            msg = 'Error while parsing response: Expecting value: line 1 column 1 (char 0) (HTTP 543/ParseError)'
-        self.assertEqual(msg, str(context.exception))
+
+        msg = r'Error while parsing response: .* \(HTTP 543/ParseError\)'
+        self.assertRegexpMatches(str(context.exception), msg)
 
 class TinifyClientRequestWithClientError(TestHelper):
     def test_should_raise_client_error(self):
