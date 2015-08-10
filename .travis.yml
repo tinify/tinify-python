@@ -26,3 +26,4 @@ deploy:
   on:
     tags: true
     repo: tinify/tinify-python
+    python: 3.4
