@@ -84,7 +84,7 @@ class TinifySourceWithValidApiKey(TestHelper):
     def test_store_should_return_result_meta(self):
         self.assertIsInstance(Source.from_buffer('png file').store(), ResultMeta)
 
-    def test_store_should_return_result_with_location(self):
+    def test_store_should_return_result_meta_with_location(self):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location',
             Source.from_buffer('png file').store(service='s3').location)
 
