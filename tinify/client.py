@@ -36,7 +36,8 @@ class Client(object):
         url = url if url.lower().startswith('https://') else self.API_ENDPOINT + url
         params = {}
         if isinstance(body, dict):
-            params['json'] = body
+            if body:
+                params['json'] = body
         elif body:
             params['data'] = body
 

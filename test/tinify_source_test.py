@@ -38,7 +38,10 @@ class TinifySourceWithValidApiKey(TestHelper):
 
     @staticmethod
     def return_file(request, uri, headers):
-        data = json.loads(request.body.decode('utf-8'))
+        if request.body:
+            data = json.loads(request.body.decode('utf-8'))
+        else:
+            data = {}
         response = None
         if 'resize' in data:
             response = b'small file'

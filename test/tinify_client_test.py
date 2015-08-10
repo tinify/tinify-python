@@ -27,6 +27,11 @@ class TinifyClientRequestWhenValid(TestHelper):
         self.assertEqual(self.request.headers['authorization'], 'Basic {0}'.format(
            b64encode(b'api:key').decode('ascii')))
 
+    def test_should_issue_request_without_body_when_options_are_empty(self):
+        Client('key').request('GET', '/', {})
+
+        self.assertEqual(self.request.body, b'')
+
     def test_should_issue_request_with_json_body(self):
         Client('key').request('GET', '/', {'hello': 'world'})
 
