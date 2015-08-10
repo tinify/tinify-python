@@ -10,6 +10,7 @@ python:
 matrix:
   allow_failures:
     - python: nightly
+    - python: pypy3
 install:
 - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install unittest2; fi
 - pip install -r requirements.txt -r test-requirements.txt
