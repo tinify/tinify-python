@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import sys
 import os
 import platform
 import requests
@@ -43,9 +44,9 @@ class Client(object):
         try:
             response = self.session.request(method, url, **params)
         except requests.exceptions.Timeout as err:
-            raise ConnectionError('Timeout while connecting')
+            self.raise_from(ConnectionError('Timeout while connecting'), err)
         except Exception as err:
-            raise ConnectionError('Error while connecting: {0}'.format(err))
+            self.raise_from(ConnectionError('Error while connecting: {0}'.format(err)), err)
 
         count = response.headers.get('compression-count')
         if count:
@@ -60,3 +61,10 @@ class Client(object):
             except Exception as err:
                 details = { 'message': 'Error while parsing response: {0}'.format(err), 'error': 'ParseError' }
             raise Error.create(details.get('message'), details.get('error'), response.status_code)
+
+    @staticmethod
+    def raise_from(err, cause):
+        # Equivalent to `raise err from cause`, but also supported by Python 2
+        if sys.version_info[0] >= 3 and cause is not None:
+            err.__cause__ = cause
+        raise err
