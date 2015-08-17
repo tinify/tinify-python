@@ -1,53 +1,72 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-__version__ = '0.9.0'
-
 import threading
-import six
+import sys
 
-class TinifyMeta(type):
-    def __init__(cls, name, bases, dct):
-        cls._client = None
-        cls._lock = threading.RLock()
-
-        cls._key = None
-        cls._app_identifier = None
-        cls.compression_count = None
-        cls.VERSION = __version__
+class Tinify(object):
+    def __init__(self, base):
+        self._lock = threading.RLock()
+        self._base = base
+        self._client = None
+        self._key = None
+        self._app_identifier = None
+        self._compression_count = None
 
     @property
-    def key(cls):
-        return cls._key
+    def key(self):
+        return self._key
 
     @key.setter
-    def key(cls, key):
-        cls._key = key
-        cls._client = None
+    def key(self, value):
+        self._key = value
+        self._client = None
 
     @property
-    def app_identifier(cls):
-        return cls._app_identifier
+    def app_identifier(self):
+        return self._app_identifier
 
     @app_identifier.setter
-    def app_identifier(cls, app_identifier):
-        cls._app_identifier = app_identifier
-        cls._client = None
+    def app_identifier(self, value):
+        self._app_identifier = value
+        self._client = None
 
     @property
-    def client(cls):
-        if not cls._key:
-            raise AccountError('Provide an API key with Tinify.key = ...')
+    def compression_count(self):
+        return self._compression_count
 
-        if not cls._client:
-            with cls._lock:
-                cls._client = Client(cls._key, cls.app_identifier)
+    @compression_count.setter
+    def compression_count(self, value):
+        self._compression_count = value
 
-        return cls._client
+    def get_client(self):
+        if not self._key:
+            raise AccountError('Provide an API key with tinify.key = ...')
 
-@six.add_metaclass(TinifyMeta)
-class Tinify(object):
-    pass
+        if not self._client:
+            with self._lock:
+                self._client = Client(self._key, self._app_identifier)
+
+        return self._client
+
+    def __getattr__(self, attr):
+        return getattr(self._base, attr)
+
+    def validate(self):
+        try:
+            self.get_client().request('post', '/shrink')
+        except ClientError:
+            return True
+
+    def from_file(self, path):
+        return Source.from_file(path)
+
+    def from_buffer(self, string):
+        return Source.from_buffer(string)
+
+sys.modules[__name__] = Tinify(sys.modules[__name__])
+
+from .version import __version__
 
 from .client import Client
 from .result_meta import ResultMeta
@@ -55,23 +74,14 @@ from .result import Result
 from .source import Source
 from .errors import *
 
-def set_key(key):
-    Tinify.key = key
-
-def set_app_identifier(app_identifier):
-    Tinify.app_identifier = app_identifier
-
-def from_file(path):
-    return Source.from_file(path)
-
-def from_buffer(string):
-    return Source.from_buffer(string)
-
-def validate():
-    try:
-        Tinify.client.request('post', '/shrink')
-    except ClientError:
-        return True
-
-def compression_count():
-    return Tinify.compression_count
+__all__ = [n.encode('ascii') for n in [
+    'Client',
+    'Result',
+    'ResultMeta',
+    'Source',
+    'Error',
+    'AccountError',
+    'ClientError',
+    'ServerError',
+    'ConnectionError'
+]]

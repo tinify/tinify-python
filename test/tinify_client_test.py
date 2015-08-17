@@ -4,7 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import sys
 from base64 import b64encode
 
-from tinify import Tinify, Client, AccountError, ClientError, ConnectionError, ServerError
+import tinify
+from tinify import Client, AccountError, ClientError, ConnectionError, ServerError
 import requests
 
 from . import *
@@ -46,7 +47,7 @@ class TinifyClientRequestWhenValid(TestHelper):
     def test_should_update_compression_count(self):
         Client('key').request('GET', '/')
 
-        self.assertEqual(Tinify.compression_count, 12)
+        self.assertEqual(tinify.compression_count, 12)
 
 class TinifyClientRequestWhenValidWithAppId(TestHelper):
     def setUp(self):

@@ -14,7 +14,7 @@ pip install tinify
 
 ```python
 import tinify
-tinify.set_key('YOUR_API_KEY')
+tinify.key = 'YOUR_API_KEY'
 
 tinify.from_file('unoptimized.png').to_file('optimized.png')
 ```

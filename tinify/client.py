@@ -5,15 +5,14 @@ import os
 import platform
 import requests
 import requests.exceptions
-import six
 import traceback
 
-from . import Tinify
+import tinify
 from .errors import ConnectionError, Error
 
 class Client(object):
     API_ENDPOINT = 'https://api.tinify.com'
-    USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(Tinify.VERSION, platform.python_version(), platform.python_implementation())
+    USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(tinify.__version__, platform.python_version(), platform.python_implementation())
 
     def __init__(self, key, app_identifier=None):
         self.session = requests.sessions.Session()
@@ -44,13 +43,13 @@ class Client(object):
         try:
             response = self.session.request(method, url, **params)
         except requests.exceptions.Timeout as err:
-            six.raise_from(ConnectionError('Timeout while connecting'), err)
+            raise ConnectionError('Timeout while connecting')
         except Exception as err:
-            six.raise_from(ConnectionError('Error while connecting: {0}'.format(err)), err)
+            raise ConnectionError('Error while connecting: {0}'.format(err))
 
         count = response.headers.get('compression-count')
         if count:
-            Tinify.compression_count = int(count)
+            tinify.compression_count = int(count)
 
         if response.ok:
             return response

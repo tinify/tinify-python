@@ -5,14 +5,15 @@ import os
 import json
 import tempfile
 
-from tinify import Tinify, Source, Result, ResultMeta, AccountError
+import tinify
+from tinify import Source, Result, ResultMeta, AccountError
 
 from . import *
 
 class TinifySourceWithInvalidApiKey(TestHelper):
     def setUp(self):
         super(type(self), self).setUp()
-        Tinify.key = 'invalid'
+        tinify.key = 'invalid'
         httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', **{
           'status': 401
         })
@@ -28,7 +29,7 @@ class TinifySourceWithInvalidApiKey(TestHelper):
 class TinifySourceWithValidApiKey(TestHelper):
     def setUp(self):
         super(type(self), self).setUp()
-        Tinify.key = 'valid'
+        tinify.key = 'valid'
         httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', **{
           'status': 201,
           'location': 'https://api.tinify.com/some/location'

@@ -5,7 +5,6 @@ import sys
 import os
 import httpretty
 import nose
-import six
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -17,7 +16,7 @@ for code in (584, 543, 492, 401):
 
 dummy_file = os.path.join(os.path.dirname(__file__), 'examples', 'dummy.png')
 
-from tinify import Tinify
+import tinify
 
 class RaiseException(object):
     def __init__(self, exception):
@@ -35,10 +34,9 @@ class TestHelper(unittest.TestCase):
         httpretty.disable()
         httpretty.reset()
 
-        Tinify.app_identifier = None
-        Tinify._client = None
-        Tinify.compression_count
-        Tinify._key = None
+        tinify.app_identifier = None
+        tinify.key = None
+        tinify.compression_count
 
     @property
     def request(self):

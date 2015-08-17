@@ -7,13 +7,8 @@ try:
 except ImportError:
     from distutils.core import setup
 
-version = None
-with open(os.path.join('tinify', '__init__.py')) as f:
-    match = re.search(r"__version__\s+=\s+\'(.+)\'", f.read())
-    if match:
-        version = match.group(1)
-if not version:
-    raise ArgumentError("Could not find version in module")
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'tinify'))
+from version import __version__
 
 tests_require = ['nose', 'httpretty']
 if sys.version_info < (2, 7):
@@ -23,7 +18,7 @@ if sys.version_info < (3, 3):
 
 setup(
     name='tinify',
-    version=version,
+    version=__version__,
     description='Tinify API client.',
     author='Jacob Middag',
     author_email='jacobmiddag@voormedia.com',
@@ -37,7 +32,7 @@ setup(
         'tinify': ['data/cacert.pem'],
     },
 
-    install_requires=['requests','six'],
+    install_requires=['requests'],
     tests_require=tests_require,
     extras_require={'test': tests_require},
 
