@@ -74,14 +74,14 @@ from .result import Result
 from .source import Source
 from .errors import *
 
-__all__ = [n.encode('ascii') for n in [
-    'Client',
-    'Result',
-    'ResultMeta',
-    'Source',
-    'Error',
-    'AccountError',
-    'ClientError',
-    'ServerError',
-    'ConnectionError'
-]]
+__all__ = [
+    b'Client',
+    b'Result',
+    b'ResultMeta',
+    b'Source',
+    b'Error',
+    b'AccountError',
+    b'ClientError',
+    b'ServerError',
+    b'ConnectionError'
+]
