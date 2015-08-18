@@ -68,10 +68,8 @@ class TinifyClientRequestWithTimeout(TestHelper):
             Client('key').request('GET', '/')
         self.assertEqual('Timeout while connecting', str(context.exception))
 
-class TinifyClientRequestWithTimeoutSetCause(TestHelper):
     @patch('requests.sessions.Session.request', RaiseException(requests.exceptions.Timeout))
-    def test_should_raise_connection_error(self):
-        if sys.version_info[0] == 2: return
+    def test_should_raise_connection_error_with_cause(self):
         with self.assertRaises(ConnectionError) as context:
             Client('key').request('GET', '/')
         self.assertIsInstance(context.exception.__cause__, requests.exceptions.Timeout)
@@ -83,10 +81,8 @@ class TinifyClientRequestWithConnectionError(TestHelper):
             Client('key').request('GET', '/')
         self.assertEqual('Error while connecting: connection error', str(context.exception))
 
-class TinifyClientRequestWithConnectionErrorShouldSetCause(TestHelper):
     @patch('requests.sessions.Session.request', RaiseException(requests.exceptions.ConnectionError('connection error')))
-    def test_should_raise_connection_error_should_set_cause(self):
-        if sys.version_info[0] == 2: return
+    def test_should_raise_connection_error_with_cause(self):
         with self.assertRaises(ConnectionError) as context:
             Client('key').request('GET', '/')
         self.assertIsInstance(context.exception.__cause__, requests.exceptions.ConnectionError)

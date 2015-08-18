@@ -17,10 +17,13 @@ class Error(Exception):
         if not message: message = 'No message was provided'
         return klass(message, kind, status)
 
-    def __init__(self, message, kind=None, status=None):
+    def __init__(self, message, kind=None, status=None, cause=None):
         self.message = message
         self.kind = kind
         self.status = status
+        if cause:
+            # Equivalent to 'raise err from cause', also supported by Python 2.
+            self.__cause__ = cause
 
     def __str__(self):
         if self.status:

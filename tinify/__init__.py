@@ -4,10 +4,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import threading
 import sys
 
-class Tinify(object):
-    def __init__(self, base):
+class tinify(object):
+    def __init__(self, module):
+        self._module = module
         self._lock = threading.RLock()
-        self._base = base
+
         self._client = None
         self._key = None
         self._app_identifier = None
@@ -49,8 +50,9 @@ class Tinify(object):
 
         return self._client
 
+    # Delegate to underlying base module.
     def __getattr__(self, attr):
-        return getattr(self._base, attr)
+        return getattr(self._module, attr)
 
     def validate(self):
         try:
@@ -64,7 +66,8 @@ class Tinify(object):
     def from_buffer(self, string):
         return Source.from_buffer(string)
 
-sys.modules[__name__] = Tinify(sys.modules[__name__])
+# Overwrite current module with singleton object.
+tinify = sys.modules[__name__] = tinify(sys.modules[__name__])
 
 from .version import __version__
 
