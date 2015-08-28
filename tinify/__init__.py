@@ -46,7 +46,8 @@ class tinify(object):
 
         if not self._client:
             with self._lock:
-                self._client = Client(self._key, self._app_identifier)
+                if not self._client:
+                    self._client = Client(self._key, self._app_identifier)
 
         return self._client
 
