@@ -2,6 +2,12 @@
 
 # Tinify API client for Python
 
+Python client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.
+
+## Documentation
+
+[Go to the documentation for the Python client](https://tinypng.com/developers/reference/python).
+
 ## Installation
 
 Install the API client:
