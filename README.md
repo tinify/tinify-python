@@ -32,6 +32,13 @@ pip install -r requirements.txt -r test-requirements.txt
 nosetests
 ```
 
+### Integration tests
+
+```
+pip install -r requirements.txt -r test-requirements.txt
+TINIFY_KEY=$YOUR_API_KEY nosetests test/integration.py
+```
+
 ## License
 
 This software is licensed under the MIT License. [View the license](LICENSE).
