@@ -8,10 +8,17 @@ python:
 - pypy
 - pypy3
 - nightly
+env:
+  global:
+    secure: h7a/ENjLEULz7J2e6AAwquDzg5WEW3+NxjuSQKoDXsfu4mKUfMRitEZGYCUe58x+n+vQ/YkhRoZWg4gr+uhzY//y8rLeQL2gcfs5uMeP48S6fUNK0U/kg0DcAKdfQatPyUZ+mzOVGX5ghzr4e8XjR9nkdnbFmLOn8Zk1jc2Il8Qr9sc5owug+DQO45Gv8iXTWjndW0TdYh8DFydJG3gaBqemtRk5NexJxQ3ejwS8RmkncKojIQkKBkWbuGJHuFQwCO03NOSpPZSkHYFJS63FX11hh9ilfA7FNf1PQ53RqeSg3dze2ulNMs/lh8+yxSx41MzkQ1Ap2gd9g24xRQoIMBP+MNviYr9O9CUD99GuP2Lb0MKqwzgbXDdt/gNi5GI9fbsD7LJxiuymGsiwRhkAENBceq3NebsLfea5qXUq84Jke+RQ1Zj0MWyhu9UBGb2LuirECDgqG7b3VxCvEMhDhD3cbn0hOqXmnPsDxnLPjrgW6YAWmfSGzDwX3JaWcVjXmy0li0KztBDD5VvL2SNrDQ7UrQIDdGqqXNOvoVl1vda9PrJk82YncCbTAylMP/Kga3GQv4SBCxI9CFQevhxBRlZZIjL5sHVBy+ctsKSsEhyMNp33PVcflIwlfMnZPx/7uy1FpTJbDZZOOVJOUUZbXmPingd9vkZ0Aj8x02zbHOQ=
 matrix:
   allow_failures:
-    - python: nightly
-    - python: pypy3
+  - python: nightly
+  - python: pypy3
+  include:
+  - python: 3.5
+    env: INTEGRATION_TESTS=true
+    script: nosetests test/integration.py
 install:
 - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install unittest2; fi
 - pip install -r requirements.txt -r test-requirements.txt
@@ -28,4 +35,5 @@ deploy:
   on:
     tags: true
     repo: tinify/tinify-python
-    python: 3.4
+    python: 3.5
+    condition: "$INTEGRATION_TESTS != true"
