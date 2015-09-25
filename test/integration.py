@@ -17,9 +17,9 @@ class ClientIntegrationTest(unittest.TestCase):
     def test_should_compress(self):
         with tempfile.NamedTemporaryFile() as tmp:
             self.optimized.to_file(tmp.name)
-            self.assertTrue(os.path.getsize(tmp.name) < 1500)
+            self.assertTrue(0 < os.path.getsize(tmp.name) < 1500)
 
     def test_should_resize(self):
         with tempfile.NamedTemporaryFile() as tmp:
             self.optimized.resize(method="fit", width=50, height=20).to_file(tmp.name)
-            self.assertTrue(os.path.getsize(tmp.name) < 800)
+            self.assertTrue(0 < os.path.getsize(tmp.name) < 800)
