@@ -1,8 +1,5 @@
 import sys, os
 
-if os.environ.get("TRAVIS_PULL_REQUEST") and os.environ.get("TRAVIS_PULL_REQUEST") != "false":
-    sys.exit(0)
-
 if not os.environ.get("TINIFY_KEY"):
     sys.exit("Set the TINIFY_KEY environment variable.")
 
