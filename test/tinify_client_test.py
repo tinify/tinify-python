@@ -33,6 +33,11 @@ class TinifyClientRequestWhenValid(TestHelper):
 
         self.assertEqual(self.request.body, b'')
 
+    def test_should_issue_request_without_content_type_when_options_are_empty(self):
+        Client('key').request('GET', '/', {})
+
+        self.assertIsNone(self.request.headers.get('content-type'))
+
     def test_should_issue_request_with_json_body(self):
         Client('key').request('GET', '/', {'hello': 'world'})
 
