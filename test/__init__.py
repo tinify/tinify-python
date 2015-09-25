@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import sys
 import os
 import httpretty
-import nose
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
