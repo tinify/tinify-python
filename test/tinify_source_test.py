@@ -8,7 +8,7 @@ import tempfile
 import tinify
 from tinify import Source, Result, ResultMeta, AccountError
 
-from . import *
+from helper import *
 
 class TinifySourceWithInvalidApiKey(TestHelper):
     def setUp(self):

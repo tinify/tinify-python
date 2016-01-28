@@ -8,7 +8,7 @@ import tinify
 from tinify import Client, AccountError, ClientError, ConnectionError, ServerError
 import requests
 
-from . import *
+from helper import *
 
 try:
     from unittest.mock import patch

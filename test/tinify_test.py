@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from base64 import b64encode
 
 import tinify
-from . import *
+from helper import *
 
 class TinifyKey(TestHelper):
     def test_should_reset_client_with_new_key(self):

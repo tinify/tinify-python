@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from tinify import Result
 
-from . import *
+from helper import *
 
 class TinifyResultWithMetaAndDataTest(TestHelper):
     def setUp(self):
