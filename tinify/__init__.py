@@ -67,6 +67,9 @@ class tinify(object):
     def from_buffer(self, string):
         return Source.from_buffer(string)
 
+    def from_url(self, url):
+        return Source.from_url(url)
+
 # Overwrite current module with singleton object.
 tinify = sys.modules[__name__] = tinify(sys.modules[__name__])
 

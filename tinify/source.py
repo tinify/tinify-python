@@ -18,6 +18,10 @@ class Source(object):
         return cls._shrink(string)
 
     @classmethod
+    def from_url(cls, url):
+        return cls._shrink({ "source": { "url": url } })
+
+    @classmethod
     def _shrink(cls, obj):
         response = tinify.get_client().request('POST', '/shrink', obj)
         return cls(response.headers.get('location'))

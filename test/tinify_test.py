@@ -49,6 +49,13 @@ class TinifyValidate(TestHelper):
         with self.assertRaises(tinify.AccountError):
             tinify.validate()
 
+class TinifyFromFile(TestHelper):
+    def test_should_return_source(self):
+        httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink',
+            location='https://api.tinify.com/some/location')
+        tinify.key = 'valid'
+        self.assertIsInstance(tinify.from_file(dummy_file), tinify.Source)
+
 class TinifyFromBuffer(TestHelper):
     def test_should_return_source(self):
         httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink',
@@ -56,9 +63,9 @@ class TinifyFromBuffer(TestHelper):
         tinify.key = 'valid'
         self.assertIsInstance(tinify.from_buffer('png file'), tinify.Source)
 
-class TinifyFromFile(TestHelper):
+class TinifyFromUrl(TestHelper):
     def test_should_return_source(self):
         httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink',
             location='https://api.tinify.com/some/location')
         tinify.key = 'valid'
-        self.assertIsInstance(tinify.from_file(dummy_file), tinify.Source)
+        self.assertIsInstance(tinify.from_url('http://example.com/test.jpg'), tinify.Source)

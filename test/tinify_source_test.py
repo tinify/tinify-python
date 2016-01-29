@@ -6,7 +6,7 @@ import json
 import tempfile
 
 import tinify
-from tinify import Source, Result, ResultMeta, AccountError
+from tinify import Source, Result, ResultMeta, AccountError, ClientError
 
 from helper import *
 
@@ -25,6 +25,10 @@ class TinifySourceWithInvalidApiKey(TestHelper):
     def test_from_buffer_should_raise_account_error(self):
         with self.assertRaises(AccountError):
             Source.from_buffer('png file')
+
+    def test_from_url_should_raise_account_error(self):
+        with self.assertRaises(AccountError):
+            Source.from_url('http://example.com/test.jpg')
 
 class TinifySourceWithValidApiKey(TestHelper):
     def setUp(self):
@@ -72,6 +76,20 @@ class TinifySourceWithValidApiKey(TestHelper):
 
     def test_from_buffer_should_return_source_with_data(self):
         self.assertEqual(b'compressed file', Source.from_buffer('png file').to_buffer())
+
+    def test_from_url_should_return_source(self):
+        self.assertIsInstance(Source.from_url('http://example.com/test.jpg'), Source)
+
+    def test_from_url_should_return_source_with_data(self):
+        self.assertEqual(b'compressed file', Source.from_url('http://example.com/test.jpg').to_buffer())
+
+    def test_from_url_should_raise_error_when_server_doesnt_return_a_success(self):
+        httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink',
+            body='{"error":"Source not found","message":"Cannot parse URL"}',
+            status=400,
+        )
+        with self.assertRaises(ClientError):
+            Source.from_url('file://wrong')
 
     def test_result_should_return_result(self):
         self.assertIsInstance(Source.from_buffer('png file').result(), Result)
