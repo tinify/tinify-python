@@ -26,4 +26,4 @@ class ClientIntegrationTest(unittest.TestCase):
         source = tinify.from_file(self.unoptimized_path)
         with tempfile.NamedTemporaryFile() as tmp:
             source.resize(method="fit", width=50, height=20).to_file(tmp.name)
-            self.assertTrue(0 < os.path.getsize(tmp.name) < 800)
+            self.assertTrue(0 < os.path.getsize(tmp.name) < 1000)
