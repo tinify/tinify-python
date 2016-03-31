@@ -6,6 +6,7 @@ import os
 import platform
 import requests
 import requests.exceptions
+from requests.compat import json
 import traceback
 
 import tinify
@@ -37,7 +38,9 @@ class Client(object):
         params = {}
         if isinstance(body, dict):
             if body:
-                params['json'] = body
+                # Dump without whitespace.
+                params['headers'] = {'Content-Type': 'application/json'}
+                params['data'] = json.dumps(body, separators=(',', ':'))
         elif body:
             params['data'] = body
 
@@ -59,5 +62,5 @@ class Client(object):
             try:
                 details = response.json()
             except Exception as err:
-                details = { 'message': 'Error while parsing response: {0}'.format(err), 'error': 'ParseError' }
+                details = {'message': 'Error while parsing response: {0}'.format(err), 'error': 'ParseError'}
             raise Error.create(details.get('message'), details.get('error'), response.status_code)

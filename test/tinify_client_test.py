@@ -42,7 +42,7 @@ class TinifyClientRequestWhenValid(TestHelper):
         Client('key').request('GET', '/', {'hello': 'world'})
 
         self.assertEqual(self.request.headers['content-type'], 'application/json')
-        self.assertEqual(self.request.body, b'{"hello": "world"}')
+        self.assertEqual(self.request.body, b'{"hello":"world"}')
 
     def test_should_issue_request_with_user_agent(self):
         Client('key').request('GET', '/')

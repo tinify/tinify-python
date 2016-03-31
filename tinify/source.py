@@ -19,7 +19,7 @@ class Source(object):
 
     @classmethod
     def from_url(cls, url):
-        return cls._shrink({ "source": { "url": url } })
+        return cls._shrink({"source": {"url": url}})
 
     @classmethod
     def _shrink(cls, obj):
@@ -29,6 +29,9 @@ class Source(object):
     def __init__(self, url, **commands):
         self.url = url
         self.commands = commands
+
+    def preserve(self, *options):
+        return type(self)(self.url, **self._merge_commands(preserve=self._flatten(options)))
 
     def resize(self, **options):
         return type(self)(self.url, **self._merge_commands(resize=options))
@@ -48,6 +51,13 @@ class Source(object):
         return self.result().to_buffer()
 
     def _merge_commands(self, **options):
-        commands = type(self.commands)(self.commands)
+        commands = self.commands.copy()
         commands.update(options)
         return commands
+
+    def _flatten(self, items, seqtypes=(list, tuple)):
+        items = list(items)
+        for i, x in enumerate(items):
+            while isinstance(items[i], seqtypes):
+                items[i:i+1] = items[i]
+        return items
