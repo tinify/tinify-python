@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import json
 import sys
 import os
 import httpretty
@@ -36,6 +37,9 @@ class TestHelper(unittest.TestCase):
         tinify.app_identifier = None
         tinify.key = None
         tinify.compression_count
+
+    def assertJsonEqual(self, expected, actual):
+        self.assertEqual(json.loads(expected), json.loads(actual))
 
     @property
     def request(self):

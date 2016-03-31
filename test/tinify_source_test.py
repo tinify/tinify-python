@@ -102,19 +102,19 @@ class TinifySourceWithValidApiKey(TestHelper):
 
     def test_preserve_should_return_source_with_data(self):
         self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve("copyright", "location").to_buffer())
-        self.assertEqual(b'{"preserve":["copyright","location"]}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"preserve":["copyright","location"]}', httpretty.last_request().body)
 
     def test_preserve_should_return_source_with_data_for_array(self):
         self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(["copyright", "location"]).to_buffer())
-        self.assertEqual(b'{"preserve":["copyright","location"]}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"preserve":["copyright","location"]}', httpretty.last_request().body)
 
     def test_preserve_should_return_source_with_data_for_tuple(self):
         self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(("copyright", "location")).to_buffer())
-        self.assertEqual(b'{"preserve":["copyright","location"]}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"preserve":["copyright","location"]}', httpretty.last_request().body)
 
     def test_preserve_should_include_other_options_if_set(self):
         self.assertEqual(b'copyrighted file', Source.from_buffer('png file').resize(width=400).preserve("copyright", "location").to_buffer())
-        self.assertEqual(b'{"preserve":["copyright","location"],"resize":{"width":400}}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"preserve":["copyright","location"],"resize":{"width":400}}', httpretty.last_request().body)
 
     def test_resize_should_return_source(self):
         self.assertIsInstance(Source.from_buffer('png file').resize(width=400), Source)
@@ -122,20 +122,20 @@ class TinifySourceWithValidApiKey(TestHelper):
 
     def test_resize_should_return_source_with_data(self):
         self.assertEqual(b'small file', Source.from_buffer('png file').resize(width=400).to_buffer())
-        self.assertEqual(b'{"resize":{"width":400}}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"resize":{"width":400}}', httpretty.last_request().body)
 
     def test_store_should_return_result_meta(self):
         self.assertIsInstance(Source.from_buffer('png file').store(service='s3'), ResultMeta)
-        self.assertEqual(b'{"store":{"service":"s3"}}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"store":{"service":"s3"}}', httpretty.last_request().body)
 
     def test_store_should_return_result_meta_with_location(self):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location',
             Source.from_buffer('png file').store(service='s3').location)
-        self.assertEqual(b'{"store":{"service":"s3"}}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"store":{"service":"s3"}}', httpretty.last_request().body)
 
     def test_store_should_include_other_options_if_set(self):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location', Source.from_buffer('png file').resize(width=400).store(service='s3').location)
-        self.assertEqual(b'{"store":{"service":"s3"},"resize":{"width":400}}', httpretty.last_request().body)
+        self.assertJsonEqual(b'{"store":{"service":"s3"},"resize":{"width":400}}', httpretty.last_request().body)
 
     def test_to_buffer_should_return_image_data(self):
         self.assertEqual(b'compressed file', Source.from_buffer('png file').to_buffer())
