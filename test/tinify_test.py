@@ -38,13 +38,13 @@ class TinifyClient(TestHelper):
 class TinifyValidate(TestHelper):
     def test_with_valid_key_should_return_true(self):
         httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', status=400,
-            body='{"error":"InputMissing","message":"No input"}')
+            body='{"error":"Input missing","message":"No input"}')
         tinify.key = 'valid'
         self.assertEqual(True, tinify.validate())
 
     def test_with_limited_key_should_return_true(self):
         httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', status=429,
-            body='{"error":"TooManyRequests","message":"Your monthly limit has been exceeded"}')
+            body='{"error":"Too many requests","message":"Your monthly limit has been exceeded"}')
         tinify.key = 'valid'
         self.assertEqual(True, tinify.validate())
 
