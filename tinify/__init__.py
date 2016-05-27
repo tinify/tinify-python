@@ -58,6 +58,10 @@ class tinify(object):
     def validate(self):
         try:
             self.get_client().request('post', '/shrink')
+        except AccountError as err:
+            if err.status == 429:
+                return True
+            raise err
         except ClientError:
             return True
 

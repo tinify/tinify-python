@@ -42,6 +42,12 @@ class TinifyValidate(TestHelper):
         tinify.key = 'valid'
         self.assertEqual(True, tinify.validate())
 
+    def test_with_limited_key_should_return_true(self):
+        httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', status=429,
+            body='{"error":"TooManyRequests","message":"Your monthly limit has been exceeded"}')
+        tinify.key = 'valid'
+        self.assertEqual(True, tinify.validate())
+
     def test_with_error_should_raise_error(self):
         httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', status=401,
             body='{"error":"Unauthorized","message":"Credentials are invalid"}')
