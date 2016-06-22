@@ -34,7 +34,7 @@ setup(
         'tinify': ['data/cacert.pem'],
     },
 
-    install_requires=['requests'],
+    install_requires=install_require,
     tests_require=tests_require,
     extras_require={'test': tests_require},
 
