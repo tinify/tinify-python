@@ -21,7 +21,7 @@ matrix:
     script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then nosetests test/integration.py; fi"
 install:
 - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install unittest2; fi
-- pip install -r requirements.txt -r test-requirements.txt
+- pip install -r test-requirements.txt
 script: nosetests
 notifications:
   email: false

@@ -10,18 +10,20 @@ except ImportError:
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'tinify'))
 from version import __version__
 
-tests_require = ['nose', 'httpretty']
+install_require = ['requests >= 2.7.0, < 3.0.0']
+tests_require = ['nose >= 1.3, < 2.0', 'httpretty >= 0.8.10, < 1.0.0']
+
 if sys.version_info < (2, 7):
     tests_require.append('unittest2')
 if sys.version_info < (3, 3):
-    tests_require.append('mock')
+    tests_require.append('mock >= 1.3, < 2.0')
 
 setup(
     name='tinify',
     version=__version__,
     description='Tinify API client.',
     author='Jacob Middag',
-    author_email='jacobmiddag@voormedia.com',
+    author_email='info@tinify.com',
     license='MIT',
     long_description='Python client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.',
     url='https://tinify.com/developers',
