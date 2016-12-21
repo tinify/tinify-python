@@ -26,6 +26,17 @@ class TinifyAppIdentifier(TestHelper):
         tinify.get_client().request('GET', '/')
         self.assertEqual(self.request.headers['user-agent'], tinify.Client.USER_AGENT + " MyApp/2.0")
 
+class TinifyProxy(TestHelper):
+    def test_should_reset_client_with_new_proxy(self):
+        httpretty.register_uri(httpretty.CONNECT, 'http://localhost:8080')
+        tinify.key = 'abcde'
+        tinify.proxy = 'http://localhost:8080'
+        tinify.get_client()
+        tinify.proxy = 'http://localhost:8080'
+        raise SkipTest('https://github.com/gabrielfalcao/HTTPretty/issues/122')
+        tinify.get_client().request('GET', '/')
+        self.assertEqual(self.request.headers['user-agent'], tinify.Client.USER_AGENT + " MyApp/2.0")
+
 class TinifyClient(TestHelper):
     def test_with_key_should_return_client(self):
         tinify.key = 'abcde'
@@ -34,6 +45,12 @@ class TinifyClient(TestHelper):
     def test_without_key_should_raise_error(self):
         with self.assertRaises(tinify.AccountError):
             tinify.get_client()
+
+    def test_with_invalid_proxy_should_raise_error(self):
+        with self.assertRaises(tinify.ConnectionError):
+            tinify.key = 'abcde'
+            tinify.proxy = 'http-bad-url'
+            tinify.get_client().request('GET', '/')
 
 class TinifyValidate(TestHelper):
     def test_with_valid_key_should_return_true(self):

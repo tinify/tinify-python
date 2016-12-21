@@ -5,6 +5,7 @@ import json
 import sys
 import os
 import httpretty
+from nose.exc import SkipTest
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -34,8 +35,9 @@ class TestHelper(unittest.TestCase):
         httpretty.disable()
         httpretty.reset()
 
-        tinify.app_identifier = None
         tinify.key = None
+        tinify.app_identifier = None
+        tinify.proxy = None
         tinify.compression_count
 
     def assertJsonEqual(self, expected, actual):

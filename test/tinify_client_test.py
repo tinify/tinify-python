@@ -66,6 +66,19 @@ class TinifyClientRequestWhenValidWithAppId(TestHelper):
 
         self.assertEqual(self.request.headers['user-agent'], Client.USER_AGENT + ' TestApp/0.2')
 
+class TinifyClientRequestWhenValidWithProxy(TestHelper):
+    def setUp(self):
+        super(type(self), self).setUp()
+        httpretty.register_uri(httpretty.CONNECT, 'http://localhost:8080', **{
+          'compression-count': 12
+        })
+
+    def test_should_issue_request_with_proxy_authorization(self):
+        raise SkipTest('https://github.com/gabrielfalcao/HTTPretty/issues/122')
+        Client('key', None, 'http://user:pass@localhost:8080').request('GET', '/')
+
+        self.assertEqual(self.request.headers['proxy-authorization'], 'Basic dXNlcjpwYXNz')
+
 class TinifyClientRequestWithTimeout(TestHelper):
     @patch('requests.sessions.Session.request', RaiseException(requests.exceptions.Timeout))
     def test_should_raise_connection_error(self):

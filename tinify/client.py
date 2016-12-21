@@ -16,8 +16,10 @@ class Client(object):
     API_ENDPOINT = 'https://api.tinify.com'
     USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(tinify.__version__, platform.python_version(), platform.python_implementation())
 
-    def __init__(self, key, app_identifier=None):
+    def __init__(self, key, app_identifier=None, proxy=None):
         self.session = requests.sessions.Session()
+        if proxy:
+            self.session.proxies = {'https': proxy}
         self.session.auth = ('api', key)
         self.session.headers = {
             'user-agent': self.USER_AGENT + ' ' + app_identifier if app_identifier else self.USER_AGENT,

@@ -7,6 +7,7 @@ import tinify, unittest, tempfile
 
 class ClientIntegrationTest(unittest.TestCase):
     tinify.key = os.environ.get("TINIFY_KEY")
+    tinify.proxy = os.environ.get("TINIFY_PROXY")
 
     unoptimized_path = os.path.join(os.path.dirname(__file__), 'examples', 'voormedia.png')
     optimized = tinify.from_file(unoptimized_path)
