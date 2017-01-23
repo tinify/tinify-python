@@ -23,3 +23,16 @@ class TinifyResultMetaWithMetaTest(TestHelper):
 
     def test_location_should_return_stored_location(self):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location', self.result.location)
+
+class TinifyResultMetaWithoutMetaTest(TestHelper):
+    def setUp(self):
+        self.result = ResultMeta({})
+
+    def test_width_should_return_none(self):
+        self.assertEqual(None, self.result.width)
+
+    def test_height_should_return_none(self):
+        self.assertEqual(None, self.result.height)
+
+    def test_location_should_return_none(self):
+        self.assertEqual(None, self.result.location)
