@@ -6,6 +6,7 @@ import sys
 import os
 import httpretty
 from nose.exc import SkipTest
+from mock import DEFAULT
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -20,11 +21,16 @@ dummy_file = os.path.join(os.path.dirname(__file__), 'examples', 'dummy.png')
 import tinify
 
 class RaiseException(object):
-    def __init__(self, exception):
+    def __init__(self, exception, num=None):
         self.exception = exception
+        self.num = num
 
     def __call__(self, *args, **kwargs):
-        raise self.exception
+        if self.num == 0:
+            return DEFAULT
+        else:
+            if self.num: self.num -= 1
+            raise self.exception
 
 class TestHelper(unittest.TestCase):
     def setUp(self):

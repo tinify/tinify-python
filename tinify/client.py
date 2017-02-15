@@ -15,6 +15,7 @@ from .errors import ConnectionError, Error
 class Client(object):
     API_ENDPOINT = 'https://api.tinify.com'
     USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(tinify.__version__, platform.python_version(), platform.python_implementation())
+    RETRY_COUNT = 1
 
     def __init__(self, key, app_identifier=None, proxy=None):
         self.session = requests.sessions.Session()
@@ -46,23 +47,27 @@ class Client(object):
         elif body:
             params['data'] = body
 
-        try:
-            response = self.session.request(method, url, **params)
-        except requests.exceptions.Timeout as err:
-            raise ConnectionError('Timeout while connecting', cause=err)
-        except Exception as err:
-            raise ConnectionError('Error while connecting: {0}'.format(err), cause=err)
-
-        count = response.headers.get('compression-count')
-        if count:
-            tinify.compression_count = int(count)
-
-        if response.ok:
-            return response
-        else:
-            details = None
+        for retries in range(self.RETRY_COUNT, -1, -1):
             try:
-                details = response.json()
+                response = self.session.request(method, url, **params)
+            except requests.exceptions.Timeout as err:
+                if retries > 0: continue
+                raise ConnectionError('Timeout while connecting', cause=err)
             except Exception as err:
-                details = {'message': 'Error while parsing response: {0}'.format(err), 'error': 'ParseError'}
-            raise Error.create(details.get('message'), details.get('error'), response.status_code)
+                if retries > 0: continue
+                raise ConnectionError('Error while connecting: {0}'.format(err), cause=err)
+
+            count = response.headers.get('compression-count')
+            if count:
+                tinify.compression_count = int(count)
+
+            if response.ok:
+                return response
+            else:
+                details = None
+                try:
+                    details = response.json()
+                except Exception as err:
+                    details = {'message': 'Error while parsing response: {0}'.format(err), 'error': 'ParseError'}
+                if retries > 0 and response.status_code >= 500: continue
+                raise Error.create(details.get('message'), details.get('error'), response.status_code)

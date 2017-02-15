@@ -79,7 +79,7 @@ class TinifyClientRequestWhenValidWithProxy(TestHelper):
 
         self.assertEqual(self.request.headers['proxy-authorization'], 'Basic dXNlcjpwYXNz')
 
-class TinifyClientRequestWithTimeout(TestHelper):
+class TinifyClientRequestWithTimeoutRepeatedly(TestHelper):
     @patch('requests.sessions.Session.request', RaiseException(requests.exceptions.Timeout))
     def test_should_raise_connection_error(self):
         with self.assertRaises(ConnectionError) as context:
@@ -92,7 +92,14 @@ class TinifyClientRequestWithTimeout(TestHelper):
             Client('key').request('GET', '/')
         self.assertIsInstance(context.exception.__cause__, requests.exceptions.Timeout)
 
-class TinifyClientRequestWithConnectionError(TestHelper):
+class TinifyClientRequestWithTimeoutOnce(TestHelper):
+    @patch('requests.sessions.Session.request')
+    def test_should_issue_request(self, mock):
+        mock.side_effect = RaiseException(requests.exceptions.Timeout, num=1)
+        mock.return_value = requests.Response()
+        self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
+
+class TinifyClientRequestWithConnectionErrorRepeatedly(TestHelper):
     @patch('requests.sessions.Session.request', RaiseException(requests.exceptions.ConnectionError('connection error')))
     def test_should_raise_connection_error(self):
         with self.assertRaises(ConnectionError) as context:
@@ -105,14 +112,28 @@ class TinifyClientRequestWithConnectionError(TestHelper):
             Client('key').request('GET', '/')
         self.assertIsInstance(context.exception.__cause__, requests.exceptions.ConnectionError)
 
-class TinifyClientRequestWithSomeError(TestHelper):
+class TinifyClientRequestWithConnectionErrorOnce(TestHelper):
+    @patch('requests.sessions.Session.request')
+    def test_should_issue_request(self, mock):
+        mock.side_effect = RaiseException(requests.exceptions.ConnectionError, num=1)
+        mock.return_value = requests.Response()
+        self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
+
+class TinifyClientRequestWithSomeErrorRepeatedly(TestHelper):
     @patch('requests.sessions.Session.request', RaiseException(RuntimeError('some error')))
     def test_should_raise_connection_error(self):
         with self.assertRaises(ConnectionError) as context:
             Client('key').request('GET', '/')
         self.assertEqual('Error while connecting: some error', str(context.exception))
 
-class TinifyClientRequestWithServerError(TestHelper):
+class TinifyClientRequestWithSomeErrorOnce(TestHelper):
+    @patch('requests.sessions.Session.request')
+    def test_should_issue_request(self, mock):
+        mock.side_effect = RaiseException(RuntimeError('some error'), num=1)
+        mock.return_value = requests.Response()
+        self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
+
+class TinifyClientRequestWithServerErrorRepeatedly(TestHelper):
     def test_should_raise_server_error(self):
         httpretty.register_uri(httpretty.GET, 'https://api.tinify.com/', status=584,
             body='{"error":"InternalServerError","message":"Oops!"}')
@@ -121,7 +142,18 @@ class TinifyClientRequestWithServerError(TestHelper):
             Client('key').request('GET', '/')
         self.assertEqual('Oops! (HTTP 584/InternalServerError)', str(context.exception))
 
-class TinifyClientRequestWithBadServerResponse(TestHelper):
+class TinifyClientRequestWithServerErrorOnce(TestHelper):
+    def test_should_issue_request(self):
+        httpretty.register_uri(httpretty.GET, 'https://api.tinify.com/',
+            responses=[
+                httpretty.Response(body='{"error":"InternalServerError","message":"Oops!"}', status=584),
+                httpretty.Response(body='all good', status=201),
+            ])
+
+        response = Client('key').request('GET', '/')
+        self.assertEqual('201', str(response.status_code))
+
+class TinifyClientRequestWithBadServerResponseRepeatedly(TestHelper):
     def test_should_raise_server_error(self):
         httpretty.register_uri(httpretty.GET, 'https://api.tinify.com/', status=543,
             body='<!-- this is not json -->')
@@ -131,6 +163,17 @@ class TinifyClientRequestWithBadServerResponse(TestHelper):
 
         msg = r'Error while parsing response: .* \(HTTP 543/ParseError\)'
         self.assertRegexpMatches(str(context.exception), msg)
+
+class TinifyClientRequestWithBadServerResponseOnce(TestHelper):
+    def test_should_issue_request(self):
+        httpretty.register_uri(httpretty.GET, 'https://api.tinify.com/',
+            responses=[
+                httpretty.Response(body='<!-- this is not json -->', status=543),
+                httpretty.Response(body='all good', status=201),
+            ])
+
+        response = Client('key').request('GET', '/')
+        self.assertEqual('201', str(response.status_code))
 
 class TinifyClientRequestWithClientError(TestHelper):
     def test_should_raise_client_error(self):
