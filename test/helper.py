@@ -6,7 +6,11 @@ import sys
 import os
 import httpretty
 from nose.exc import SkipTest
-from mock import DEFAULT
+
+if sys.version_info < (3, 3):
+    from mock import DEFAULT
+else:
+    from unittest.mock import DEFAULT
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
