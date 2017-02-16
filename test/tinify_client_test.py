@@ -98,8 +98,8 @@ class TinifyClientRequestWithTimeoutOnce(TestHelper):
     @patch('requests.sessions.Session.request')
     def test_should_issue_request(self, mock):
         mock.side_effect = RaiseException(requests.exceptions.Timeout, num=1)
-        mock.return_value.status_code = 201
         mock.return_value = requests.Response()
+        mock.return_value.status_code = 201
         self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
 
 class TinifyClientRequestWithConnectionErrorRepeatedly(TestHelper):
@@ -119,8 +119,8 @@ class TinifyClientRequestWithConnectionErrorOnce(TestHelper):
     @patch('requests.sessions.Session.request')
     def test_should_issue_request(self, mock):
         mock.side_effect = RaiseException(requests.exceptions.ConnectionError, num=1)
-        mock.return_value.status_code = 201
         mock.return_value = requests.Response()
+        mock.return_value.status_code = 201
         self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
 
 class TinifyClientRequestWithSomeErrorRepeatedly(TestHelper):
@@ -134,8 +134,8 @@ class TinifyClientRequestWithSomeErrorOnce(TestHelper):
     @patch('requests.sessions.Session.request')
     def test_should_issue_request(self, mock):
         mock.side_effect = RaiseException(RuntimeError('some error'), num=1)
-        mock.return_value.status_code = 201
         mock.return_value = requests.Response()
+        mock.return_value.status_code = 201
         self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
 
 class TinifyClientRequestWithServerErrorRepeatedly(TestHelper):
