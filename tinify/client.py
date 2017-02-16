@@ -8,14 +8,19 @@ import requests
 import requests.exceptions
 from requests.compat import json
 import traceback
+import time
 
 import tinify
 from .errors import ConnectionError, Error
 
 class Client(object):
     API_ENDPOINT = 'https://api.tinify.com'
-    USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(tinify.__version__, platform.python_version(), platform.python_implementation())
+
     RETRY_COUNT = 1
+
+    RETRY_DELAY = 500
+
+    USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(tinify.__version__, platform.python_version(), platform.python_implementation())
 
     def __init__(self, key, app_identifier=None, proxy=None):
         self.session = requests.sessions.Session()
@@ -48,6 +53,7 @@ class Client(object):
             params['data'] = body
 
         for retries in range(self.RETRY_COUNT, -1, -1):
+            if retries < self.RETRY_COUNT: time.sleep(self.RETRY_DELAY / 1000.0)
             try:
                 response = self.session.request(method, url, **params)
             except requests.exceptions.Timeout as err:

@@ -15,6 +15,8 @@ try:
 except ImportError:
     from mock import patch
 
+Client.RETRY_DELAY = 10
+
 class TinifyClientRequestWhenValid(TestHelper):
     def setUp(self):
         super(type(self), self).setUp()
@@ -96,6 +98,7 @@ class TinifyClientRequestWithTimeoutOnce(TestHelper):
     @patch('requests.sessions.Session.request')
     def test_should_issue_request(self, mock):
         mock.side_effect = RaiseException(requests.exceptions.Timeout, num=1)
+        mock.return_value.status_code = 201
         mock.return_value = requests.Response()
         self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
 
@@ -116,6 +119,7 @@ class TinifyClientRequestWithConnectionErrorOnce(TestHelper):
     @patch('requests.sessions.Session.request')
     def test_should_issue_request(self, mock):
         mock.side_effect = RaiseException(requests.exceptions.ConnectionError, num=1)
+        mock.return_value.status_code = 201
         mock.return_value = requests.Response()
         self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
 
@@ -130,6 +134,7 @@ class TinifyClientRequestWithSomeErrorOnce(TestHelper):
     @patch('requests.sessions.Session.request')
     def test_should_issue_request(self, mock):
         mock.side_effect = RaiseException(RuntimeError('some error'), num=1)
+        mock.return_value.status_code = 201
         mock.return_value = requests.Response()
         self.assertIsInstance(Client('key').request('GET', '/', {}), requests.Response)
 
