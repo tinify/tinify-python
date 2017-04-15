@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import tinify
 from . import Result, ResultMeta
+from google.appengine.ext import ndb
 
 class Source(object):
     @classmethod
@@ -43,6 +44,9 @@ class Source(object):
     def result(self):
         response = tinify.get_client().request('GET', self.url, self.commands)
         return Result(response.headers, response.content)
+
+    def to_blob(self, key):
+        return self.result().to_blob(key)
 
     def to_file(self, path):
         return self.result().to_file(path)

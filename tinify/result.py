@@ -2,11 +2,16 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from . import ResultMeta
+from google.appengine.ext import ndb
 
 class Result(ResultMeta):
     def __init__(self, meta, data):
         ResultMeta.__init__(self, meta)
         self.data = data
+
+    def to_blob(self, key):
+        img_store = key.get()
+        img_store.img = self.data
 
     def to_file(self, path):
         if hasattr(path, 'write'):
