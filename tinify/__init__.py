@@ -37,7 +37,7 @@ class tinify(object):
     def proxy(self):
         return self._key
 
-    @key.setter
+    @proxy.setter
     def proxy(self, value):
         self._proxy = value
         self._client = None
