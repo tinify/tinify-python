@@ -1,5 +1,5 @@
 ## 1.5.1
-* Fix proxy setter.
+* Fix tinify.proxy setter.
 
 ## 1.5.0
 * Retry failed requests by default.
