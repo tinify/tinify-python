@@ -90,7 +90,6 @@ class tinify(object):
 tinify = sys.modules[__name__] = tinify(sys.modules[__name__])
 
 from .version import __version__
-
 from .client import Client
 from .result_meta import ResultMeta
 from .result import Result
