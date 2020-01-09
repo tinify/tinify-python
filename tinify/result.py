@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from . import ResultMeta
+from .result_meta import ResultMeta
 
 
 class Result(ResultMeta):
