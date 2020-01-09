@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import threading
 import sys
 
+
 class tinify(object):
     def __init__(self, module):
         self._module = module
@@ -84,6 +85,7 @@ class tinify(object):
     def from_url(self, url):
         return Source.from_url(url)
 
+
 # Overwrite current module with singleton object.
 tinify = sys.modules[__name__] = tinify(sys.modules[__name__])
 
@@ -93,7 +95,7 @@ from .client import Client
 from .result_meta import ResultMeta
 from .result import Result
 from .source import Source
-from .errors import *
+from .errors import Error, AccountError, ClientError, ConnectionError, ServerError
 
 __all__ = [
     b'Client',
@@ -104,5 +106,5 @@ __all__ = [
     b'AccountError',
     b'ClientError',
     b'ServerError',
-    b'ConnectionError'
+    b'ConnectionError',
 ]
