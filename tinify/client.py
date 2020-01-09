@@ -6,6 +6,7 @@ import requests.exceptions
 from requests.compat import json
 import time
 import tinify
+from .version import __version__
 from .errors import ConnectionError, Error
 
 
@@ -15,7 +16,7 @@ class Client(object):
     RETRY_COUNT = 1
     RETRY_DELAY = 500
 
-    USER_AGENT = f'Tinify/{tinify.__version__} Python/{platform.python_version()} ({platform.python_implementation()})'
+    USER_AGENT = f'Tinify/{__version__} Python/{platform.python_version()} ({platform.python_implementation()})'
 
     def __init__(self, key, app_identifier=None, proxy=None):
         self.session = requests.sessions.Session()
