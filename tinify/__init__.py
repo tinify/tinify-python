@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 import threading
 import sys
+from .version import __version__
+from .result_meta import ResultMeta
+from .result import Result
+from .errors import Error, AccountError, ClientError, ConnectionError, ServerError
 
 
 class tinify(object):
@@ -87,12 +91,8 @@ class tinify(object):
 # Overwrite current module with singleton object.
 tinify = sys.modules[__name__] = tinify(sys.modules[__name__])
 
-from .version import __version__
 from .client import Client
-from .result_meta import ResultMeta
-from .result import Result
 from .source import Source
-from .errors import Error, AccountError, ClientError, ConnectionError, ServerError
 
 __all__ = [
     b'Client',
