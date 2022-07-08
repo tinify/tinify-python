@@ -32,6 +32,14 @@ pip install -r requirements.txt -r test-requirements.txt
 nosetests
 ```
 
+To test more runtimes, tox can be used
+
+```
+tox
+```
+
+
+
 ### Integration tests
 
 ```
