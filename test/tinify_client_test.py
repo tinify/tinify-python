@@ -7,6 +7,7 @@ from base64 import b64encode
 import tinify
 from tinify import Client, AccountError, ClientError, ConnectionError, ServerError
 import requests
+import pytest
 
 from helper import *
 
@@ -75,10 +76,9 @@ class TinifyClientRequestWhenValidWithProxy(TestHelper):
           'compression-count': 12
         })
 
+    @pytest.mark.skip(reason="https://github.com/gabrielfalcao/HTTPretty/issues/122")
     def test_should_issue_request_with_proxy_authorization(self):
-        raise SkipTest('https://github.com/gabrielfalcao/HTTPretty/issues/122')
         Client('key', None, 'http://user:pass@localhost:8080').request('GET', '/')
-
         self.assertEqual(self.request.headers['proxy-authorization'], 'Basic dXNlcjpwYXNz')
 
 class TinifyClientRequestWithTimeoutRepeatedly(TestHelper):

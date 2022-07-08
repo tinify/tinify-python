@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from base64 import b64encode
 
 import tinify
+import pytest
 from helper import *
 
 class TinifyKey(TestHelper):
@@ -27,13 +28,14 @@ class TinifyAppIdentifier(TestHelper):
         self.assertEqual(self.request.headers['user-agent'], tinify.Client.USER_AGENT + " MyApp/2.0")
 
 class TinifyProxy(TestHelper):
+
+    @pytest.mark.skip(reason="https://github.com/gabrielfalcao/HTTPretty/issues/122")
     def test_should_reset_client_with_new_proxy(self):
         httpretty.register_uri(httpretty.CONNECT, 'http://localhost:8080')
         tinify.key = 'abcde'
         tinify.proxy = 'http://localhost:8080'
         tinify.get_client()
         tinify.proxy = 'http://localhost:8080'
-        raise SkipTest('https://github.com/gabrielfalcao/HTTPretty/issues/122')
         tinify.get_client().request('GET', '/')
         self.assertEqual(self.request.headers['user-agent'], tinify.Client.USER_AGENT + " MyApp/2.0")
 

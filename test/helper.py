@@ -5,7 +5,6 @@ import json
 import sys
 import os
 import httpretty
-from nose.exc import SkipTest
 
 if sys.version_info < (3, 3):
     from mock import DEFAULT
