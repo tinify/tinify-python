@@ -165,9 +165,8 @@ class TinifyClientRequestWithBadServerResponseRepeatedly(TestHelper):
 
         with self.assertRaises(ServerError) as context:
             Client('key').request('GET', '/')
-
-        msg = r'Error while parsing response: .* \(HTTP 543/ParseError\)'
-        self.assertRegexpMatches(str(context.exception), msg)
+            msg = r'Error while parsing response: .* \(HTTP 543/ParseError\)'
+            self.assertRegex(str(context.exception), msg)
 
 class TinifyClientRequestWithBadServerResponseOnce(TestHelper):
     def test_should_issue_request(self):
