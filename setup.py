@@ -26,6 +26,7 @@ setup(
     author_email='info@tinify.com',
     license='MIT',
     long_description='Python client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.',
+    long_description_content_type='text/markdown',
     url='https://tinify.com/developers',
 
     packages=['tinify'],
@@ -46,8 +47,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5'
-        'Programming Language :: Python :: 3.6'
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',

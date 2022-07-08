@@ -1,0 +1,100 @@
+name: CI_CD
+
+on: [push, pull_request]
+
+permissions: {}
+jobs:
+  Unit_tests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [
+          "2.7",
+          "3.7", "3.8", "3.9", "3.10", "3.11-dev",
+          "pypy-2.7", "pypy-3.8"
+        ]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install -r test-requirements.txt -r requirements.txt
+    - name: Run tests
+      run: |
+        pytest
+
+  Integration_tests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    needs: Unit_tests
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [
+          "3.10",
+        ]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install -r test-requirements.txt -r requirements.txt
+    - name: Run tests
+      env:
+        TINIFY_KEY: ${{ secrets.TINIFY_KEY }}
+      run: |
+        pytest test/integration.py
+
+  Publish:
+    if: |
+       github.repository == 'tinify/tinify-python' &&
+       startsWith(github.ref, 'refs/tags') &&
+       github.event_name == 'push'
+    timeout-minutes: 10
+    needs: [Unit_tests, Integration_tests]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install build wheel
+    - name: Build package (sdist & wheel)
+      run: |
+        python -m build --sdist --wheel --outdir dist/
+    - name: Test sdist install
+      run: |
+        python -m venv sdist_env
+        ./sdist_env/bin/pip install dist/tinify*.tar.gz
+    - name: Test wheel install
+      run: |
+        python -m venv wheel_env
+        ./wheel_env/bin/pip install dist/tinify*.whl
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_ACCESS_TOKEN }}
+        # Use the test repository for testing the publish feature
+        # repository_url: https://test.pypi.org/legacy/
+        packages_dir: dist/
+        print_hash: true
+    

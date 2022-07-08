@@ -1,10 +1,23 @@
 import sys, os
-from test.helper import create_named_tmpfile
+from contextlib import contextmanager
+import tinify, unittest, tempfile
 
 if not os.environ.get("TINIFY_KEY"):
     sys.exit("Set the TINIFY_KEY environment variable.")
 
-import tinify, unittest, tempfile
+@contextmanager
+def create_named_tmpfile():
+    #  Due to NamedTemporaryFile requiring to be closed when used on Windows
+    #   we create our own NamedTemporaryFile contextmanager
+    # See note: https://docs.python.org/3/library/tempfile.html#tempfile.NamedTemporaryFile
+
+    tmp = tempfile.NamedTemporaryFile(delete=False)
+    try:
+        tmp.close()
+        yield tmp.name
+    finally:
+        os.unlink(tmp.name)
+
 
 class ClientIntegrationTest(unittest.TestCase):
     tinify.key = os.environ.get("TINIFY_KEY")
