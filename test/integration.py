@@ -83,3 +83,12 @@ class ClientIntegrationTest(unittest.TestCase):
             # width == 137
             self.assertIn(b'\x00\x00\x00\x89', contents)
             self.assertIn(b'Copyright Voormedia', contents)
+
+    def test_should_transcode_image(self):
+        with create_named_tmpfile() as tmp:
+            a = self.optimized.transcode("image/webp").to_file(tmp)
+            with open(tmp, 'rb') as f:
+                content = f.read()
+
+            self.assertEqual(b'RIFF', content[:4])
+            self.assertEqual(b'WEBP', content[8:12])
