@@ -1,5 +1,5 @@
 [![MIT License](http://img.shields.io/badge/license-MIT-green.svg) ](https://github.com/tinify/tinify-python/blob/main/LICENSE)
-[![CI](https://github.com/tinify/tinify-python/actions/workflows/run-tests.yml/badge.svg)](https://github.com/tinify/tinify-python/actions/workflows/run-tests.yml)
+[![CI](https://github.com/tinify/tinify-python/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tinify/tinify-python/actions/workflows/ci-cd.yml)
 ![PyPI](https://img.shields.io/pypi/v/tinify)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tinify)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/tinify)
