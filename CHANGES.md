@@ -1,3 +1,14 @@
+## 1.6.0
+* Updated runtime support
+    * Dropped 2.6
+    * Added python 3.7
+    * Added python 3.8
+    * Added python 3.9
+    * Added python 3.10
+    * Added python 3.11
+* Fixed tests on windows
+* Add methods for the transcoding and transformation API
+
 ## 1.5.2
 Remove letsencrypt DST Root from ca bundle for openssl 1.0.0 compatibility
 
