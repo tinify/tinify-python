@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
-
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
 import json
 import sys
 import os
 import httpretty
-from nose.exc import SkipTest
 
 if sys.version_info < (3, 3):
     from mock import DEFAULT
@@ -56,3 +56,18 @@ class TestHelper(unittest.TestCase):
     @property
     def request(self):
         return httpretty.last_request()
+
+
+
+@contextmanager
+def create_named_tmpfile():
+    #  Due to NamedTemporaryFile requiring to be closed when used on Windows
+    #   we create our own NamedTemporaryFile contextmanager
+    # See note: https://docs.python.org/3/library/tempfile.html#tempfile.NamedTemporaryFile
+
+    tmp = NamedTemporaryFile(delete=False)
+    try:
+        tmp.close()
+        yield tmp.name
+    finally:
+        os.unlink(tmp.name)

@@ -147,6 +147,7 @@ class TinifySourceWithValidApiKey(TestHelper):
             self.assertEqual(b'compressed file', tmp.read())
 
     def test_to_file_with_file_object_should_store_image_data(self):
-        with tempfile.NamedTemporaryFile() as tmp:
-            Source.from_buffer('png file').to_file(tmp.name)
-            self.assertEqual(b'compressed file', tmp.read())
+        with create_named_tmpfile() as name:
+            Source.from_buffer('png file').to_file(name)
+            with open(name, 'rb') as f:
+                self.assertEqual(b'compressed file', f.read())
