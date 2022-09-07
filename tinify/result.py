@@ -28,6 +28,12 @@ class Result(ResultMeta):
         return self._meta.get('Content-Type')
 
     @property
+    def extension(self):
+        media_type = self._meta.get('Content-Type')
+        if media_type:
+            return media_type.split('/')[-1]
+
+    @property
     def content_type(self):
         return self.media_type
 

@@ -8,6 +8,7 @@
     * Added python 3.11
 * Fixed tests on windows
 * Add methods for the transcoding and transformation API
+* Add a method for getting the file extension from a Result object
 
 ## 1.5.2
 Remove letsencrypt DST Root from ca bundle for openssl 1.0.0 compatibility
