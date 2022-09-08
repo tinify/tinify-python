@@ -1,4 +1,4 @@
-name: CI_CD
+name: Python CI/CD
 
 on: [push, pull_request]
 
