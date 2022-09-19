@@ -56,8 +56,8 @@ class TinifySourceWithValidApiKey(TestHelper):
             response = b'copyrighted file'
         elif 'resize' in data:
             response = b'small file'
-        elif 'type' in data:
-            response = b'transcoded file'
+        elif 'convert' in data:
+            response = b'converted file'
         elif 'transform' in data:
             response = b'transformed file'
         else:
@@ -137,13 +137,13 @@ class TinifySourceWithValidApiKey(TestHelper):
         self.assertEqual(b'transformed file', Source.from_buffer('png file').transform(background='black').to_buffer())
         self.assertJsonEqual('{"transform":{"background":"black"}}', httpretty.last_request().body.decode('utf-8'))
 
-    def test_transcode_should_return_source(self):
-        self.assertIsInstance(Source.from_buffer('png file').resize(width=400).transcode(['image/webp']), Source)
+    def test_convert_should_return_source(self):
+        self.assertIsInstance(Source.from_buffer('png file').resize(width=400).convert(type=['image/webp']), Source)
         self.assertEqual(b'png file', httpretty.last_request().body)
 
-    def test_transcode_should_return_source_with_data(self):
-        self.assertEqual(b'transcoded file', Source.from_buffer('png file').transcode('image/jpg').to_buffer())
-        self.assertJsonEqual('{"type": "image/jpg"}', httpretty.last_request().body.decode('utf-8'))
+    def test_convert_should_return_source_with_data(self):
+        self.assertEqual(b'converted file', Source.from_buffer('png file').convert(type='image/jpg').to_buffer())
+        self.assertJsonEqual('{"convert": {"type": "image/jpg"}}', httpretty.last_request().body.decode('utf-8'))
 
     def test_store_should_return_result_meta(self):
         self.assertIsInstance(Source.from_buffer('png file').store(service='s3'), ResultMeta)
@@ -176,9 +176,9 @@ class TinifySourceWithValidApiKey(TestHelper):
     def test_all_options_together(self):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location',
                          Source.from_buffer('png file').resize(width=400)\
-                                                       .transcode(['image/webp', 'image/png'])\
+                                                       .convert(type=['image/webp', 'image/png'])\
                                                        .transform(background="black")\
                                                        .preserve("copyright", "location")\
                                                        .store(service='s3').location)
-        self.assertJsonEqual('{"store":{"service":"s3"},"resize":{"width":400},"preserve": ["copyright", "location"], "transform": {"background": "black"}, "type": ["image/webp", "image/png"]}', httpretty.last_request().body.decode('utf-8'))
+        self.assertJsonEqual('{"store":{"service":"s3"},"resize":{"width":400},"preserve": ["copyright", "location"], "transform": {"background": "black"}, "convert": {"type": ["image/webp", "image/png"]}}', httpretty.last_request().body.decode('utf-8'))
 

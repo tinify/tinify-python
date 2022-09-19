@@ -86,7 +86,7 @@ class ClientIntegrationTest(unittest.TestCase):
 
     def test_should_transcode_image(self):
         with create_named_tmpfile() as tmp:
-            a = self.optimized.transcode("image/webp").to_file(tmp)
+            a = self.optimized.convert(type=["image/webp"]).to_file(tmp)
             with open(tmp, 'rb') as f:
                 content = f.read()
 

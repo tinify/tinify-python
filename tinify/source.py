@@ -36,8 +36,8 @@ class Source(object):
     def resize(self, **options):
         return type(self)(self.url, **self._merge_commands(resize=options))
 
-    def transcode(self, types):
-        return type(self)(self.url, **self._merge_commands(type=types))
+    def convert(self, **options):
+        return type(self)(self.url, **self._merge_commands(convert=options))
 
     def transform(self, **options):
         return type(self)(self.url, **self._merge_commands(transform=options))
