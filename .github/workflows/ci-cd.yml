@@ -31,6 +31,7 @@ jobs:
         pytest
 
   Integration_tests:
+    if: github.event_name == 'push'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     needs: Unit_tests
@@ -97,4 +98,3 @@ jobs:
         # repository_url: https://test.pypi.org/legacy/
         packages_dir: dist/
         print_hash: true
-    
