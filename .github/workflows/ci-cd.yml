@@ -1,4 +1,4 @@
-name: CI_CD
+name: Python CI/CD
 
 on: [push, pull_request]
 
@@ -74,6 +74,16 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
+    - name: Check if properly tagged
+      run: |
+        PACKAGE_VERSION="$(python -c 'from tinify import __version__;print(__version__)')";
+        CURRENT_TAG="${GITHUB_REF#refs/*/}";
+        if  [[ "${PACKAGE_VERSION}" != "${CURRENT_TAG}" ]]; then
+          >&2 echo "Tag mismatch"
+          >&2 echo "Version in tinify/version.py (${PACKAGE_VERSION}) does not match the current tag=${CURRENT_TAG}"
+          >&2 echo "Skipping deploy"
+          exit 1;
+        fi
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
