@@ -74,6 +74,10 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install build wheel
     - name: Check if properly tagged
       run: |
         PACKAGE_VERSION="$(python -c 'from tinify import __version__;print(__version__)')";
@@ -84,10 +88,6 @@ jobs:
           >&2 echo "Skipping deploy"
           exit 1;
         fi
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install build wheel
     - name: Build package (sdist & wheel)
       run: |
         python -m build --sdist --wheel --outdir dist/
