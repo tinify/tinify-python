@@ -35,6 +35,11 @@ class TinifyResultWithMetaAndDataTest(TestHelper):
     def test_to_buffer_should_return_image_data(self):
         self.assertEqual(b'image data', self.result.to_buffer())
 
+    def test_extension(self):
+        self.assertEqual('png', self.result.extension)
+
+
+
 class TinifyResultWithoutMetaAndDataTest(TestHelper):
     def setUp(self):
         self.result = Result({}, None)
@@ -59,3 +64,6 @@ class TinifyResultWithoutMetaAndDataTest(TestHelper):
 
     def test_to_buffer_should_return_none(self):
         self.assertEqual(None, self.result.to_buffer())
+
+    def test_extension(self):
+        self.assertEqual(None, self.result.extension)

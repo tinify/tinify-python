@@ -36,6 +36,12 @@ class Source(object):
     def resize(self, **options):
         return type(self)(self.url, **self._merge_commands(resize=options))
 
+    def convert(self, **options):
+        return type(self)(self.url, **self._merge_commands(convert=options))
+
+    def transform(self, **options):
+        return type(self)(self.url, **self._merge_commands(transform=options))
+
     def store(self, **options):
         response = tinify.get_client().request('POST', self.url, self._merge_commands(store=options))
         return ResultMeta(response.headers)
