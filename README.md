@@ -1,8 +1,8 @@
 [![MIT License](http://img.shields.io/badge/license-MIT-green.svg) ](https://github.com/tinify/tinify-python/blob/main/LICENSE)
 [![CI](https://github.com/tinify/tinify-python/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tinify/tinify-python/actions/workflows/ci-cd.yml)
-![PyPI](https://img.shields.io/pypi/v/tinify)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tinify)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/tinify)
+[![PyPI](https://img.shields.io/pypi/v/tinify)](https://pypi.org/project/tinify/#history)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tinify)](https://pypi.org/project/tinify/)
+[![PyPI - Wheel](https://img.shields.io/pypi/wheel/tinify)](https://pypi.org/project/tinify/)
 
 
 # Tinify API client for Python
