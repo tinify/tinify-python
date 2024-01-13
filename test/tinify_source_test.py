@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
-import json
 import tempfile
 
-import tinify
-from tinify import Source, Result, ResultMeta, AccountError, ClientError
+import httpretty
 
+from tinify import Source, Result, ResultMeta, AccountError, ClientError
 from helper import *
 
 
@@ -31,6 +29,7 @@ class TinifySourceWithInvalidApiKey(TestHelper):
         with self.assertRaises(AccountError):
             Source.from_url('http://example.com/test.jpg')
 
+
 class TinifySourceWithValidApiKey(TestHelper):
     def setUp(self):
         super(type(self), self).setUp()
@@ -48,7 +47,7 @@ class TinifySourceWithValidApiKey(TestHelper):
             data = json.loads(request.body.decode('utf-8'))
         else:
             data = {}
-        response = None
+
         if 'store' in data:
             headers['location'] = 'https://bucket.s3-region.amazonaws.com/some/location'
             response = json.dumps({'status': 'success'}).encode('utf-8')
@@ -62,7 +61,7 @@ class TinifySourceWithValidApiKey(TestHelper):
             response = b'transformed file'
         else:
             response = b'compressed file'
-        return (200, headers, response)
+        return 200, headers, response
 
     def test_from_file_with_path_should_return_source(self):
         self.assertIsInstance(Source.from_file(dummy_file), Source)
@@ -102,23 +101,23 @@ class TinifySourceWithValidApiKey(TestHelper):
         self.assertIsInstance(Source.from_buffer('png file').result(), Result)
 
     def test_preserve_should_return_source(self):
-        self.assertIsInstance(Source.from_buffer('png file').preserve("copyright", "location"), Source)
+        self.assertIsInstance(Source.from_buffer('png file').preserve('copyright', 'location'), Source)
         self.assertEqual(b'png file', httpretty.last_request().body)
 
     def test_preserve_should_return_source_with_data(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve("copyright", "location").to_buffer())
+        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve('copyright', 'location').to_buffer())
         self.assertJsonEqual('{"preserve":["copyright","location"]}', httpretty.last_request().body.decode('utf-8'))
 
     def test_preserve_should_return_source_with_data_for_array(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(["copyright", "location"]).to_buffer())
+        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(['copyright', 'location']).to_buffer())
         self.assertJsonEqual('{"preserve":["copyright","location"]}', httpretty.last_request().body.decode('utf-8'))
 
     def test_preserve_should_return_source_with_data_for_tuple(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(("copyright", "location")).to_buffer())
+        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(('copyright', 'location')).to_buffer())
         self.assertJsonEqual('{"preserve":["copyright","location"]}', httpretty.last_request().body.decode('utf-8'))
 
     def test_preserve_should_include_other_options_if_set(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').resize(width=400).preserve("copyright", "location").to_buffer())
+        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').resize(width=400).preserve('copyright', 'location').to_buffer())
         self.assertJsonEqual('{"preserve":["copyright","location"],"resize":{"width":400}}', httpretty.last_request().body.decode('utf-8'))
 
     def test_resize_should_return_source(self):
@@ -177,8 +176,8 @@ class TinifySourceWithValidApiKey(TestHelper):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location',
                          Source.from_buffer('png file').resize(width=400)\
                                                        .convert(type=['image/webp', 'image/png'])\
-                                                       .transform(background="black")\
-                                                       .preserve("copyright", "location")\
+                                                       .transform(background='black')\
+                                                       .preserve('copyright', 'location')\
                                                        .store(service='s3').location)
         self.assertJsonEqual('{"store":{"service":"s3"},"resize":{"width":400},"preserve": ["copyright", "location"], "transform": {"background": "black"}, "convert": {"type": ["image/webp", "image/png"]}}', httpretty.last_request().body.decode('utf-8'))
 

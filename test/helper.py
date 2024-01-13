@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
+
+import os
+import sys
+import json
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile
-import json
-import sys
-import os
+
 import httpretty
+
+import tinify
+
 
 if sys.version_info < (3, 3):
     from mock import DEFAULT
@@ -22,7 +27,6 @@ for code in (584, 543, 492, 401):
 
 dummy_file = os.path.join(os.path.dirname(__file__), 'examples', 'dummy.png')
 
-import tinify
 
 class RaiseException(object):
     def __init__(self, exception, num=None):
@@ -33,8 +37,10 @@ class RaiseException(object):
         if self.num == 0:
             return DEFAULT
         else:
-            if self.num: self.num -= 1
+            if self.num:
+                self.num -= 1
             raise self.exception
+
 
 class TestHelper(unittest.TestCase):
     def setUp(self):
@@ -48,7 +54,6 @@ class TestHelper(unittest.TestCase):
         tinify.key = None
         tinify.app_identifier = None
         tinify.proxy = None
-        tinify.compression_count
 
     def assertJsonEqual(self, expected, actual):
         self.assertEqual(json.loads(expected), json.loads(actual))
@@ -58,11 +63,10 @@ class TestHelper(unittest.TestCase):
         return httpretty.last_request()
 
 
-
 @contextmanager
 def create_named_tmpfile():
-    #  Due to NamedTemporaryFile requiring to be closed when used on Windows
-    #   we create our own NamedTemporaryFile contextmanager
+    # Due to NamedTemporaryFile requiring to be closed when used on Windows
+    # we create our own NamedTemporaryFile contextmanager
     # See note: https://docs.python.org/3/library/tempfile.html#tempfile.NamedTemporaryFile
 
     tmp = NamedTemporaryFile(delete=False)

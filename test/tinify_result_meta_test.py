@@ -2,8 +2,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from tinify import ResultMeta
-
 from helper import *
+
 
 class TinifyResultMetaWithMetaTest(TestHelper):
     def setUp(self):
@@ -23,6 +23,7 @@ class TinifyResultMetaWithMetaTest(TestHelper):
 
     def test_location_should_return_stored_location(self):
         self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location', self.result.location)
+
 
 class TinifyResultMetaWithoutMetaTest(TestHelper):
     def setUp(self):

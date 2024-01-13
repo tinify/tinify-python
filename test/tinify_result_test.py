@@ -2,8 +2,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from tinify import Result
-
 from helper import *
+
 
 class TinifyResultWithMetaAndDataTest(TestHelper):
     def setUp(self):
@@ -37,7 +37,6 @@ class TinifyResultWithMetaAndDataTest(TestHelper):
 
     def test_extension(self):
         self.assertEqual('png', self.result.extension)
-
 
 
 class TinifyResultWithoutMetaAndDataTest(TestHelper):

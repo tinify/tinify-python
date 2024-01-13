@@ -1,14 +1,20 @@
-import sys, os
+import os
+import sys
+import tempfile
+import unittest
 from contextlib import contextmanager
-import tinify, unittest, tempfile
 
-if not os.environ.get("TINIFY_KEY"):
-    sys.exit("Set the TINIFY_KEY environment variable.")
+import tinify
+
+
+if not os.environ.get('TINIFY_KEY'):
+    sys.exit('Set the TINIFY_KEY environment variable.')
+
 
 @contextmanager
 def create_named_tmpfile():
-    #  Due to NamedTemporaryFile requiring to be closed when used on Windows
-    #   we create our own NamedTemporaryFile contextmanager
+    # Due to NamedTemporaryFile requiring to be closed when used on Windows
+    # we create our own NamedTemporaryFile contextmanager
     # See note: https://docs.python.org/3/library/tempfile.html#tempfile.NamedTemporaryFile
 
     tmp = tempfile.NamedTemporaryFile(delete=False)
@@ -20,8 +26,8 @@ def create_named_tmpfile():
 
 
 class ClientIntegrationTest(unittest.TestCase):
-    tinify.key = os.environ.get("TINIFY_KEY")
-    tinify.proxy = os.environ.get("TINIFY_PROXY")
+    tinify.key = os.environ.get('TINIFY_KEY')
+    tinify.proxy = os.environ.get('TINIFY_PROXY')
 
     unoptimized_path = os.path.join(os.path.dirname(__file__), 'examples', 'voormedia.png')
     optimized = tinify.from_file(unoptimized_path)
@@ -58,7 +64,7 @@ class ClientIntegrationTest(unittest.TestCase):
 
     def test_should_resize(self):
         with create_named_tmpfile() as tmp:
-            self.optimized.resize(method="fit", width=50, height=20).to_file(tmp)
+            self.optimized.resize(method='fit', width=50, height=20).to_file(tmp)
 
             size = os.path.getsize(tmp)
             with open(tmp, 'rb') as f:
@@ -72,7 +78,7 @@ class ClientIntegrationTest(unittest.TestCase):
 
     def test_should_preserve_metadata(self):
         with create_named_tmpfile() as tmp:
-            self.optimized.preserve("copyright", "creation").to_file(tmp)
+            self.optimized.preserve('copyright', 'creation').to_file(tmp)
 
             size = os.path.getsize(tmp)
             with open(tmp, 'rb') as f:
@@ -86,7 +92,7 @@ class ClientIntegrationTest(unittest.TestCase):
 
     def test_should_transcode_image(self):
         with create_named_tmpfile() as tmp:
-            a = self.optimized.convert(type=["image/webp"]).to_file(tmp)
+            self.optimized.convert(type=['image/webp']).to_file(tmp)
             with open(tmp, 'rb') as f:
                 content = f.read()
 

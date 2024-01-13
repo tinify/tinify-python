@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import tinify
 from . import Result, ResultMeta
 
+
 class Source(object):
     @classmethod
     def from_file(cls, path):

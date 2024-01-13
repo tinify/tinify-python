@@ -1,6 +1,8 @@
-import sys
 import os
-import re
+import sys
+
+from version import __version__
+
 
 try:
     from setuptools import setup
@@ -8,7 +10,6 @@ except ImportError:
     from distutils.core import setup
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'tinify'))
-from version import __version__
 
 install_require = ['requests >= 2.7.0, < 3.0.0']
 tests_require = ['pytest', 'httpretty < 1.1.5']

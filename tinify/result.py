@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from . import ResultMeta
 
+
 class Result(ResultMeta):
     def __init__(self, meta, data):
         ResultMeta.__init__(self, meta)

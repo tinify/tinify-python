@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import threading
 import sys
+import threading
+
 
 class tinify(object):
     def __init__(self, module):
@@ -84,11 +85,11 @@ class tinify(object):
     def from_url(self, url):
         return Source.from_url(url)
 
+
 # Overwrite current module with singleton object.
 tinify = sys.modules[__name__] = tinify(sys.modules[__name__])
 
 from .version import __version__
-
 from .client import Client
 from .result_meta import ResultMeta
 from .result import Result
