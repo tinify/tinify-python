@@ -1,3 +1,11 @@
+## 1.6.1
+
+* Updated runtime support
+    * Dropped python 3.7
+    * Added Python 3.12
+    * Added Python 3.13
+* Tests: Replaced httpretty with requests-mock
+
 ## 1.6.0
 * Updated runtime support
     * Dropped 2.6
