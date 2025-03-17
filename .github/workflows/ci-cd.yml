@@ -4,6 +4,19 @@ on: [push, pull_request]
 
 permissions: {}
 jobs:
+  Unit_Tests_Py27:
+    runs-on: ubuntu-20.04
+    container:
+      image: python:2.7.18-buster
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        pip install -r test-requirements.txt -r requirements.txt
+    - name: Test
+      run: |
+        pytest
+
   Unit_tests:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -12,8 +25,8 @@ jobs:
       matrix:
         python-version: [
           "2.7",
-          "3.7", "3.8", "3.9", "3.10", "3.11-dev",
-          "pypy-2.7", "pypy-3.8"
+          "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14-dev",
+          "pypy-2.7", "pypy-3.10"
         ]
         os: [ubuntu-latest, macOS-latest, windows-latest]
 
@@ -39,7 +52,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [
-          "3.10",
+          "3.13",
         ]
         os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
@@ -73,7 +86,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: "3.13"
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
