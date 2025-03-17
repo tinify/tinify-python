@@ -10,8 +10,8 @@ except ImportError:
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'tinify'))
 from version import __version__
 
-install_require = ['requests >= 2.7.0, < 3.0.0']
-tests_require = ['pytest', 'httpretty < 1.1.5']
+install_require = ["requests >= 2.7.0, < 3.0.0"]
+tests_require = ["pytest", "pytest-xdist", "requests-mock"]
 
 if sys.version_info < (2, 7):
     tests_require.append('unittest2')
