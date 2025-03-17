@@ -1,184 +1,285 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import os
 import json
 import tempfile
+import pytest
 
 import tinify
 from tinify import Source, Result, ResultMeta, AccountError, ClientError
 
-from helper import *
+
+def create_named_tmpfile():
+    """Helper to create a named temporary file"""
+    fd, name = tempfile.mkstemp()
+    os.close(fd)
+    return name
 
 
-class TinifySourceWithInvalidApiKey(TestHelper):
-    def setUp(self):
-        super(type(self), self).setUp()
-        tinify.key = 'invalid'
-        httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', **{
-          'status': 401
-        })
+def assert_json_equal(expected, actual):
+    """Helper to assert JSON equality"""
+    if isinstance(actual, str):
+        actual = json.loads(actual)
+    if isinstance(expected, str):
+        expected = json.loads(expected)
+    assert expected == actual
 
-    def test_from_file_should_raise_account_error(self):
-        with self.assertRaises(AccountError):
+
+class TestTinifySourceWithInvalidApiKey:
+    @pytest.fixture(autouse=True)
+    def setup(self, mock_requests):
+        tinify.key = "invalid"
+        mock_requests.post("https://api.tinify.com/shrink", status_code=401)
+        yield
+
+    def test_from_file_should_raise_account_error(self, dummy_file):
+        with pytest.raises(AccountError):
             Source.from_file(dummy_file)
 
     def test_from_buffer_should_raise_account_error(self):
-        with self.assertRaises(AccountError):
-            Source.from_buffer('png file')
+        with pytest.raises(AccountError):
+            Source.from_buffer("png file")
 
     def test_from_url_should_raise_account_error(self):
-        with self.assertRaises(AccountError):
-            Source.from_url('http://example.com/test.jpg')
+        with pytest.raises(AccountError):
+            Source.from_url("http://example.com/test.jpg")
 
-class TinifySourceWithValidApiKey(TestHelper):
-    def setUp(self):
-        super(type(self), self).setUp()
-        tinify.key = 'valid'
-        httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink', **{
-          'status': 201,
-          'location': 'https://api.tinify.com/some/location'
-        })
-        httpretty.register_uri(httpretty.GET, 'https://api.tinify.com/some/location', body=self.return_file)
-        httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/some/location', body=self.return_file)
 
-    @staticmethod
-    def return_file(request, uri, headers):
-        if request.body:
-            data = json.loads(request.body.decode('utf-8'))
+class TestTinifySourceWithValidApiKey:
+    @pytest.fixture(autouse=True)
+    def setup_teardown(self, mock_requests):
+        tinify.key = "valid"
+        mock_requests.post(
+            "https://api.tinify.com/shrink",
+            status_code=201,
+            headers={"location": "https://api.tinify.com/some/location"},
+        )
+        mock_requests.get(
+            "https://api.tinify.com/some/location", content=self.return_file
+        )
+        mock_requests.post(
+            "https://api.tinify.com/some/location", content=self.return_file
+        )
+        yield
+
+    def return_file(self, request, context):
+        data = request.json() if request.body else {}
+        if "store" in data:
+            context.headers["location"] = (
+                "https://bucket.s3-region.amazonaws.com/some/location"
+            )
+            return json.dumps({"status": "success"}).encode("utf-8")
+        elif "preserve" in data:
+            return b"copyrighted file"
+        elif "resize" in data:
+            return b"small file"
+        elif "convert" in data:
+            return b"converted file"
+        elif "transform" in data:
+            return b"transformed file"
         else:
-            data = {}
-        response = None
-        if 'store' in data:
-            headers['location'] = 'https://bucket.s3-region.amazonaws.com/some/location'
-            response = json.dumps({'status': 'success'}).encode('utf-8')
-        elif 'preserve' in data:
-            response = b'copyrighted file'
-        elif 'resize' in data:
-            response = b'small file'
-        elif 'convert' in data:
-            response = b'converted file'
-        elif 'transform' in data:
-            response = b'transformed file'
-        else:
-            response = b'compressed file'
-        return (200, headers, response)
+            return b"compressed file"
 
-    def test_from_file_with_path_should_return_source(self):
-        self.assertIsInstance(Source.from_file(dummy_file), Source)
+    def test_from_file_with_path_should_return_source(self, dummy_file):
+        assert isinstance(Source.from_file(dummy_file), Source)
 
-    def test_from_file_with_path_should_return_source_with_data(self):
-        self.assertEqual(b'compressed file', Source.from_file(dummy_file).to_buffer())
+    def test_from_file_with_path_should_return_source_with_data(self, dummy_file):
+        assert b"compressed file" == Source.from_file(dummy_file).to_buffer()
 
-    def test_from_file_with_file_object_should_return_source(self):
-        with open(dummy_file, 'rb') as f:
-            self.assertIsInstance(Source.from_file(f), Source)
+    def test_from_file_with_file_object_should_return_source(self, dummy_file):
+        with open(dummy_file, "rb") as f:
+            assert isinstance(Source.from_file(f), Source)
 
-    def test_from_file_with_file_object_should_return_source_with_data(self):
-        with open(dummy_file, 'rb') as f:
-            self.assertEqual(b'compressed file', Source.from_file(f).to_buffer())
+    def test_from_file_with_file_object_should_return_source_with_data(
+        self, dummy_file
+    ):
+        with open(dummy_file, "rb") as f:
+            assert b"compressed file" == Source.from_file(f).to_buffer()
 
     def test_from_buffer_should_return_source(self):
-        self.assertIsInstance(Source.from_buffer('png file'), Source)
+        assert isinstance(Source.from_buffer("png file"), Source)
 
     def test_from_buffer_should_return_source_with_data(self):
-        self.assertEqual(b'compressed file', Source.from_buffer('png file').to_buffer())
+        assert b"compressed file" == Source.from_buffer("png file").to_buffer()
 
     def test_from_url_should_return_source(self):
-        self.assertIsInstance(Source.from_url('http://example.com/test.jpg'), Source)
+        assert isinstance(Source.from_url("http://example.com/test.jpg"), Source)
 
     def test_from_url_should_return_source_with_data(self):
-        self.assertEqual(b'compressed file', Source.from_url('http://example.com/test.jpg').to_buffer())
-
-    def test_from_url_should_raise_error_when_server_doesnt_return_a_success(self):
-        httpretty.register_uri(httpretty.POST, 'https://api.tinify.com/shrink',
-            body='{"error":"Source not found","message":"Cannot parse URL"}',
-            status=400,
+        assert (
+            b"compressed file"
+            == Source.from_url("http://example.com/test.jpg").to_buffer()
         )
-        with self.assertRaises(ClientError):
-            Source.from_url('file://wrong')
+
+    def test_from_url_should_raise_error_when_server_doesnt_return_a_success(
+        self, mock_requests
+    ):
+        mock_requests.post(
+            "https://api.tinify.com/shrink",
+            json={"error": "Source not found", "message": "Cannot parse URL"},
+            status_code=400,
+        )
+        with pytest.raises(ClientError):
+            Source.from_url("file://wrong")
 
     def test_result_should_return_result(self):
-        self.assertIsInstance(Source.from_buffer('png file').result(), Result)
+        assert isinstance(Source.from_buffer(b"png file").result(), Result)
 
-    def test_preserve_should_return_source(self):
-        self.assertIsInstance(Source.from_buffer('png file').preserve("copyright", "location"), Source)
-        self.assertEqual(b'png file', httpretty.last_request().body)
+    def test_preserve_should_return_source(self, mock_requests):
+        assert isinstance(
+            Source.from_buffer(b"png file").preserve("copyright", "location"), Source
+        )
+        assert b"png file" == mock_requests.last_request.body
 
-    def test_preserve_should_return_source_with_data(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve("copyright", "location").to_buffer())
-        self.assertJsonEqual('{"preserve":["copyright","location"]}', httpretty.last_request().body.decode('utf-8'))
+    def test_preserve_should_return_source_with_data(self, mock_requests):
+        assert (
+            b"copyrighted file"
+            == Source.from_buffer(b"png file")
+            .preserve("copyright", "location")
+            .to_buffer()
+        )
+        assert_json_equal(
+            '{"preserve":["copyright","location"]}', mock_requests.last_request.json()
+        )
 
-    def test_preserve_should_return_source_with_data_for_array(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(["copyright", "location"]).to_buffer())
-        self.assertJsonEqual('{"preserve":["copyright","location"]}', httpretty.last_request().body.decode('utf-8'))
+    def test_preserve_should_return_source_with_data_for_array(self, mock_requests):
+        assert (
+            b"copyrighted file"
+            == Source.from_buffer(b"png file")
+            .preserve(["copyright", "location"])
+            .to_buffer()
+        )
+        assert_json_equal(
+            '{"preserve":["copyright","location"]}', mock_requests.last_request.json()
+        )
 
-    def test_preserve_should_return_source_with_data_for_tuple(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').preserve(("copyright", "location")).to_buffer())
-        self.assertJsonEqual('{"preserve":["copyright","location"]}', httpretty.last_request().body.decode('utf-8'))
+    def test_preserve_should_return_source_with_data_for_tuple(self, mock_requests):
+        assert (
+            b"copyrighted file"
+            == Source.from_buffer(b"png file")
+            .preserve(("copyright", "location"))
+            .to_buffer()
+        )
+        assert_json_equal(
+            '{"preserve":["copyright","location"]}', mock_requests.last_request.json()
+        )
 
-    def test_preserve_should_include_other_options_if_set(self):
-        self.assertEqual(b'copyrighted file', Source.from_buffer('png file').resize(width=400).preserve("copyright", "location").to_buffer())
-        self.assertJsonEqual('{"preserve":["copyright","location"],"resize":{"width":400}}', httpretty.last_request().body.decode('utf-8'))
+    def test_preserve_should_include_other_options_if_set(self, mock_requests):
+        assert (
+            b"copyrighted file"
+            == Source.from_buffer(b"png file")
+            .resize(width=400)
+            .preserve("copyright", "location")
+            .to_buffer()
+        )
+        assert_json_equal(
+            '{"preserve":["copyright","location"],"resize":{"width":400}}',
+            mock_requests.last_request.json(),
+        )
 
-    def test_resize_should_return_source(self):
-        self.assertIsInstance(Source.from_buffer('png file').resize(width=400), Source)
-        self.assertEqual(b'png file', httpretty.last_request().body)
+    def test_resize_should_return_source(self, mock_requests):
+        assert isinstance(Source.from_buffer(b"png file").resize(width=400), Source)
+        assert b"png file" == mock_requests.last_request.body
 
-    def test_resize_should_return_source_with_data(self):
-        self.assertEqual(b'small file', Source.from_buffer('png file').resize(width=400).to_buffer())
-        self.assertJsonEqual('{"resize":{"width":400}}', httpretty.last_request().body.decode('utf-8'))
+    def test_resize_should_return_source_with_data(self, mock_requests):
+        assert (
+            b"small file"
+            == Source.from_buffer(b"png file").resize(width=400).to_buffer()
+        )
+        assert_json_equal('{"resize":{"width":400}}', mock_requests.last_request.json())
 
-    def test_transform_should_return_source(self):
-        self.assertIsInstance(Source.from_buffer('png file').transform(background='black'), Source)
-        self.assertEqual(b'png file', httpretty.last_request().body)
+    def test_transform_should_return_source(self, mock_requests):
+        assert isinstance(
+            Source.from_buffer(b"png file").transform(background="black"), Source
+        )
+        assert b"png file" == mock_requests.last_request.body
 
-    def test_transform_should_return_source_with_data(self):
-        self.assertEqual(b'transformed file', Source.from_buffer('png file').transform(background='black').to_buffer())
-        self.assertJsonEqual('{"transform":{"background":"black"}}', httpretty.last_request().body.decode('utf-8'))
+    def test_transform_should_return_source_with_data(self, mock_requests):
+        assert (
+            b"transformed file"
+            == Source.from_buffer(b"png file").transform(background="black").to_buffer()
+        )
+        assert_json_equal(
+            '{"transform":{"background":"black"}}', mock_requests.last_request.json()
+        )
 
-    def test_convert_should_return_source(self):
-        self.assertIsInstance(Source.from_buffer('png file').resize(width=400).convert(type=['image/webp']), Source)
-        self.assertEqual(b'png file', httpretty.last_request().body)
+    def test_convert_should_return_source(self, mock_requests):
+        assert isinstance(
+            Source.from_buffer(b"png file")
+            .resize(width=400)
+            .convert(type=["image/webp"]),
+            Source,
+        )
+        assert b"png file" == mock_requests.last_request.body
 
-    def test_convert_should_return_source_with_data(self):
-        self.assertEqual(b'converted file', Source.from_buffer('png file').convert(type='image/jpg').to_buffer())
-        self.assertJsonEqual('{"convert": {"type": "image/jpg"}}', httpretty.last_request().body.decode('utf-8'))
+    def test_convert_should_return_source_with_data(self, mock_requests):
+        assert (
+            b"converted file"
+            == Source.from_buffer(b"png file").convert(type="image/jpg").to_buffer()
+        )
+        assert_json_equal(
+            '{"convert": {"type": "image/jpg"}}', mock_requests.last_request.json()
+        )
 
-    def test_store_should_return_result_meta(self):
-        self.assertIsInstance(Source.from_buffer('png file').store(service='s3'), ResultMeta)
-        self.assertJsonEqual('{"store":{"service":"s3"}}', httpretty.last_request().body.decode('utf-8'))
+    def test_store_should_return_result_meta(self, mock_requests):
+        assert isinstance(
+            Source.from_buffer(b"png file").store(service="s3"), ResultMeta
+        )
+        assert_json_equal(
+            '{"store":{"service":"s3"}}', mock_requests.last_request.json()
+        )
 
-    def test_store_should_return_result_meta_with_location(self):
-        self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location',
-            Source.from_buffer('png file').store(service='s3').location)
-        self.assertJsonEqual('{"store":{"service":"s3"}}', httpretty.last_request().body.decode('utf-8'))
+    def test_store_should_return_result_meta_with_location(self, mock_requests):
+        assert (
+            "https://bucket.s3-region.amazonaws.com/some/location"
+            == Source.from_buffer(b"png file").store(service="s3").location
+        )
+        assert_json_equal(
+            '{"store":{"service":"s3"}}', mock_requests.last_request.json()
+        )
 
-    def test_store_should_include_other_options_if_set(self):
-        self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location', Source.from_buffer('png file').resize(width=400).store(service='s3').location)
-        self.assertJsonEqual('{"store":{"service":"s3"},"resize":{"width":400}}', httpretty.last_request().body.decode('utf-8'))
+    def test_store_should_include_other_options_if_set(self, mock_requests):
+        assert (
+            "https://bucket.s3-region.amazonaws.com/some/location"
+            == Source.from_buffer(b"png file")
+            .resize(width=400)
+            .store(service="s3")
+            .location
+        )
+        assert_json_equal(
+            '{"store":{"service":"s3"},"resize":{"width":400}}',
+            mock_requests.last_request.json(),
+        )
 
     def test_to_buffer_should_return_image_data(self):
-        self.assertEqual(b'compressed file', Source.from_buffer('png file').to_buffer())
+        assert b"compressed file" == Source.from_buffer(b"png file").to_buffer()
 
     def test_to_file_with_path_should_store_image_data(self):
         with tempfile.TemporaryFile() as tmp:
-            Source.from_buffer('png file').to_file(tmp)
+            Source.from_buffer(b"png file").to_file(tmp)
             tmp.seek(0)
-            self.assertEqual(b'compressed file', tmp.read())
+            assert b"compressed file" == tmp.read()
 
     def test_to_file_with_file_object_should_store_image_data(self):
-        with create_named_tmpfile() as name:
-            Source.from_buffer('png file').to_file(name)
-            with open(name, 'rb') as f:
-                self.assertEqual(b'compressed file', f.read())
+        name = create_named_tmpfile()
+        try:
+            Source.from_buffer(b"png file").to_file(name)
+            with open(name, "rb") as f:
+                assert b"compressed file" == f.read()
+        finally:
+            os.unlink(name)
 
-    def test_all_options_together(self):
-        self.assertEqual('https://bucket.s3-region.amazonaws.com/some/location',
-                         Source.from_buffer('png file').resize(width=400)\
-                                                       .convert(type=['image/webp', 'image/png'])\
-                                                       .transform(background="black")\
-                                                       .preserve("copyright", "location")\
-                                                       .store(service='s3').location)
-        self.assertJsonEqual('{"store":{"service":"s3"},"resize":{"width":400},"preserve": ["copyright", "location"], "transform": {"background": "black"}, "convert": {"type": ["image/webp", "image/png"]}}', httpretty.last_request().body.decode('utf-8'))
-
+    def test_all_options_together(self, mock_requests):
+        assert (
+            "https://bucket.s3-region.amazonaws.com/some/location"
+            == Source.from_buffer(b"png file")
+            .resize(width=400)
+            .convert(type=["image/webp", "image/png"])
+            .transform(background="black")
+            .preserve("copyright", "location")
+            .store(service="s3")
+            .location
+        )
+        assert_json_equal(
+            '{"store":{"service":"s3"},"resize":{"width":400},"preserve": ["copyright", "location"], "transform": {"background": "black"}, "convert": {"type": ["image/webp", "image/png"]}}',
+            mock_requests.last_request.json(),
+        )
