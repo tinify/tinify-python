@@ -42,11 +42,34 @@ jobs:
       run: |
         pytest
 
+  Mypy:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [
+          "3.12"
+        ]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install -r test-requirements.txt -r requirements.txt
+    - name: Run tests
+      run: |
+        mypy --check tinify
+
   Integration_tests:
     if: github.event_name == 'push'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
-    needs: Unit_tests
+    needs: [Unit_tests, Mypy, Unit_Tests_Py27]
     strategy:
       fail-fast: false
       matrix:

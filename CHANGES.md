@@ -1,5 +1,6 @@
-## 1.6.1
+## 1.7.0
 
+* Added type annotations
 * Updated runtime support
     * Dropped python 3.7
     * Added Python 3.12

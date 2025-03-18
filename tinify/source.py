@@ -4,9 +4,45 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import tinify
 from . import Result, ResultMeta
 
+try:
+    from typing import Union, Dict, IO, Any, TypedDict, List, Literal, Optional, Unpack, TYPE_CHECKING, overload
+
+    class ResizeOptions(TypedDict, total=False):
+        method: Literal['scale', 'fit', 'cover', 'thumb']
+        width: int
+        height: int
+
+    ConvertTypes = Literal['image/webp', 'image/jpeg', 'image/png', "image/avif", "*/*"]
+    class ConvertOptions(TypedDict, total=False):
+        type: Union[ConvertTypes, List[ConvertTypes]]
+
+    class TransformOptions(TypedDict, total=False):
+        background: str | Literal["white", "black"]
+
+    class S3StoreOptions(TypedDict, total=False):
+        service: Literal['s3']
+        aws_access_key_id: str
+        aws_secret_access_key: str
+        region: str
+        path: str
+        headers: Optional[Dict[str, str]]
+        acl: Optional[Literal["no-acl"]]
+
+    class GCSStoreOptions(TypedDict, total=False):
+        service: Literal['gcs']
+        gcp_access_token: str
+        path: str
+        headers: Optional[Dict[str, str]]
+
+    PreserveOption = Literal['copyright', 'creation', 'location']
+except ImportError:
+    TYPE_CHECKING = False # type: ignore
+
+
+
 class Source(object):
     @classmethod
-    def from_file(cls, path):
+    def from_file(cls, path):  # type: (Union[str, IO]) -> Source
         if hasattr(path, 'read'):
             return cls._shrink(path)
         else:
@@ -14,49 +50,58 @@ class Source(object):
                 return cls._shrink(f.read())
 
     @classmethod
-    def from_buffer(cls, string):
+    def from_buffer(cls, string):  # type: (bytes) -> Source
         return cls._shrink(string)
 
     @classmethod
-    def from_url(cls, url):
+    def from_url(cls, url):  # type: (str) -> Source
         return cls._shrink({"source": {"url": url}})
 
     @classmethod
-    def _shrink(cls, obj):
+    def _shrink(cls, obj):  # type: (Any) -> Source
         response = tinify.get_client().request('POST', '/shrink', obj)
-        return cls(response.headers.get('location'))
+        return cls(response.headers['location'])
 
-    def __init__(self, url, **commands):
+    def __init__(self, url, **commands):  # type: (str, **Any) -> None
         self.url = url
         self.commands = commands
 
-    def preserve(self, *options):
+    def preserve(self, *options):  # type: (*PreserveOption) -> "Source"
         return type(self)(self.url, **self._merge_commands(preserve=self._flatten(options)))
 
-    def resize(self, **options):
+    def resize(self, **options):  # type: (Unpack[ResizeOptions]) -> "Source"
         return type(self)(self.url, **self._merge_commands(resize=options))
 
-    def convert(self, **options):
+    def convert(self, **options):  # type: (Unpack[ConvertOptions]) -> "Source"
         return type(self)(self.url, **self._merge_commands(convert=options))
 
-    def transform(self, **options):
+    def transform(self, **options):  # type: (Unpack[TransformOptions]) -> "Source"
         return type(self)(self.url, **self._merge_commands(transform=options))
 
-    def store(self, **options):
+    if TYPE_CHECKING:
+        @overload
+        def store(self, **options): # type: (Unpack[S3StoreOptions]) -> ResultMeta
+            ...
+
+        @overload
+        def store(self, **options): # type: (Unpack[GCSStoreOptions]) -> ResultMeta
+            ...
+
+    def store(self, **options):  # type: (Any) -> ResultMeta
         response = tinify.get_client().request('POST', self.url, self._merge_commands(store=options))
         return ResultMeta(response.headers)
 
-    def result(self):
+    def result(self):  # type: () -> Result
         response = tinify.get_client().request('GET', self.url, self.commands)
         return Result(response.headers, response.content)
 
-    def to_file(self, path):
+    def to_file(self, path):  # type: (Union[str, IO]) -> None
         return self.result().to_file(path)
 
-    def to_buffer(self):
+    def to_buffer(self):  # type: () -> bytes
         return self.result().to_buffer()
 
-    def _merge_commands(self, **options):
+    def _merge_commands(self, **options):  # type: (**Any) -> Dict[str, Any]
         commands = self.commands.copy()
         commands.update(options)
         return commands

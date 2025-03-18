@@ -6,12 +6,17 @@ import os
 import platform
 import requests
 import requests.exceptions
-from requests.compat import json
+from requests.compat import json # type: ignore
 import traceback
 import time
 
 import tinify
 from .errors import ConnectionError, Error
+
+try:
+    from typing import Any, Optional
+except ImportError:
+    pass
 
 class Client(object):
     API_ENDPOINT = 'https://api.tinify.com'
@@ -21,7 +26,7 @@ class Client(object):
 
     USER_AGENT = 'Tinify/{0} Python/{1} ({2})'.format(tinify.__version__, platform.python_version(), platform.python_implementation())
 
-    def __init__(self, key, app_identifier=None, proxy=None):
+    def __init__(self, key, app_identifier=None, proxy=None):  # type: (str, Optional[str], Optional[str]) -> None
         self.session = requests.sessions.Session()
         if proxy:
             self.session.proxies = {'https': proxy}
@@ -31,18 +36,19 @@ class Client(object):
         }
         self.session.verify = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cacert.pem')
 
-    def __enter__(self):
+    def __enter__(self):  # type: () -> Client
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args):  # type: (*Any) -> None
         self.close()
+        return None
 
-    def close(self):
+    def close(self):  # type: () -> None
         self.session.close()
 
-    def request(self, method, url, body=None):
+    def request(self, method, url, body=None):  # type: (str, str, Any) -> requests.Response
         url = url if url.lower().startswith('https://') else self.API_ENDPOINT + url
-        params = {}
+        params = {}  # type: dict[str, Any]
         if isinstance(body, dict):
             if body:
                 # Dump without whitespace.
@@ -77,3 +83,5 @@ class Client(object):
                 details = {'message': 'Error while parsing response: {0}'.format(err), 'error': 'ParseError'}
             if retries > 0 and response.status_code >= 500: continue
             raise Error.create(details.get('message'), details.get('error'), response.status_code)
+
+        raise Error.create("Received no response", "ConnectionError", 0)
