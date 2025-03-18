@@ -114,23 +114,23 @@ class tinify(object):
 if TYPE_CHECKING:
     # Help the type checker here, as we overrride the module with a singleton object.
     def get_client(): # type: () -> Client
-        ...
+        pass
     key = None  # type: Optional[str]
     app_identifier = None  # type: Optional[str]
     proxy = None  # type: Optional[str]
     compression_count = None  # type: Optional[int]
 
     def validate():  # type: () -> bool
-        ...
+        pass
 
     def from_file(path):  # type: (str) -> Source
-        ...
+        pass
 
     def from_buffer(string):  # type: (bytes) -> Source
-        ...
+        pass
 
     def from_url(url):  # type: (str) -> Source
-        ...
+        pass
 
 
 # Overwrite current module with singleton object.
