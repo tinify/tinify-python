@@ -2,43 +2,16 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import tinify
-from . import Result, ResultMeta
+import sys
+from tinify.result import Result
+from tinify.result_meta import ResultMeta
 
 try:
-    from typing import Union, Dict, IO, Any, TypedDict, List, Literal, Optional, Unpack, TYPE_CHECKING, overload
-
-    class ResizeOptions(TypedDict, total=False):
-        method: Literal['scale', 'fit', 'cover', 'thumb']
-        width: int
-        height: int
-
-    ConvertTypes = Literal['image/webp', 'image/jpeg', 'image/png', "image/avif", "*/*"]
-    class ConvertOptions(TypedDict, total=False):
-        type: Union[ConvertTypes, List[ConvertTypes]]
-
-    class TransformOptions(TypedDict, total=False):
-        background: str | Literal["white", "black"]
-
-    class S3StoreOptions(TypedDict, total=False):
-        service: Literal['s3']
-        aws_access_key_id: str
-        aws_secret_access_key: str
-        region: str
-        path: str
-        headers: Optional[Dict[str, str]]
-        acl: Optional[Literal["no-acl"]]
-
-    class GCSStoreOptions(TypedDict, total=False):
-        service: Literal['gcs']
-        gcp_access_token: str
-        path: str
-        headers: Optional[Dict[str, str]]
-
-    PreserveOption = Literal['copyright', 'creation', 'location']
+    from typing import Union, Dict, IO, Any, List, Literal, Optional, Unpack, TYPE_CHECKING, overload
+    if sys.version_info.major > 3 and sys.version_info.minor > 8:
+        from  tinify.typed import *
 except ImportError:
     TYPE_CHECKING = False # type: ignore
-
-
 
 class Source(object):
     @classmethod
@@ -81,11 +54,11 @@ class Source(object):
     if TYPE_CHECKING:
         @overload
         def store(self, **options): # type: (Unpack[S3StoreOptions]) -> ResultMeta
-            ...
+            pass
 
         @overload
         def store(self, **options): # type: (Unpack[GCSStoreOptions]) -> ResultMeta
-            ...
+            pass
 
     def store(self, **options):  # type: (Any) -> ResultMeta
         response = tinify.get_client().request('POST', self.url, self._merge_commands(store=options))
