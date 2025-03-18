@@ -3,9 +3,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import threading
 import sys
+try:
+    from typing import Optional, Any, TYPE_CHECKING
+except ImportError:
+    TYPE_CHECKING = False # type: ignore
 
 class tinify(object):
+
+    _client = None  # type: Optional[Client]
+    _key = None  # type: Optional[str]
+    _app_identifier = None  # type: Optional[str]
+    _proxy = None  # type: Optional[str]
+    _compression_count = None  # type: Optional[int]
+
     def __init__(self, module):
+        # type: (Any) -> None
         self._module = module
         self._lock = threading.RLock()
 
@@ -17,40 +29,49 @@ class tinify(object):
 
     @property
     def key(self):
+        # type: () -> Optional[str]
         return self._key
 
     @key.setter
     def key(self, value):
+        # type: (str) -> None
         self._key = value
         self._client = None
 
     @property
     def app_identifier(self):
+        # type: () -> Optional[str]
         return self._app_identifier
 
     @app_identifier.setter
     def app_identifier(self, value):
+        # type: (str) -> None
         self._app_identifier = value
         self._client = None
 
     @property
     def proxy(self):
-        return self._key
+        # type: () -> Optional[str]
+        return self._proxy
 
     @proxy.setter
     def proxy(self, value):
+        # type: (str) -> None
         self._proxy = value
         self._client = None
 
     @property
     def compression_count(self):
+        # type: () -> Optional[int]
         return self._compression_count
 
     @compression_count.setter
     def compression_count(self, value):
+        # type: (int) -> None
         self._compression_count = value
 
     def get_client(self):
+        # type: () -> Client
         if not self._key:
             raise AccountError('Provide an API key with tinify.key = ...')
 
@@ -63,9 +84,11 @@ class tinify(object):
 
     # Delegate to underlying base module.
     def __getattr__(self, attr):
+        # type: (str) -> Any
         return getattr(self._module, attr)
 
     def validate(self):
+        # type: () -> bool
         try:
             self.get_client().request('post', '/shrink')
         except AccountError as err:
@@ -74,18 +97,44 @@ class tinify(object):
             raise err
         except ClientError:
             return True
+        return False
 
     def from_file(self, path):
+        # type: (str) -> Source
         return Source.from_file(path)
 
     def from_buffer(self, string):
+        # type: (bytes) -> Source
         return Source.from_buffer(string)
 
     def from_url(self, url):
+        # type: (str) -> Source
         return Source.from_url(url)
 
+if TYPE_CHECKING:
+    # Help the type checker here, as we overrride the module with a singleton object.
+    def get_client(): # type: () -> Client
+        ...
+    key = None  # type: Optional[str]
+    app_identifier = None  # type: Optional[str]
+    proxy = None  # type: Optional[str]
+    compression_count = None  # type: Optional[int]
+
+    def validate():  # type: () -> bool
+        ...
+
+    def from_file(path):  # type: (str) -> Source
+        ...
+
+    def from_buffer(string):  # type: (bytes) -> Source
+        ...
+
+    def from_url(url):  # type: (str) -> Source
+        ...
+
+
 # Overwrite current module with singleton object.
-tinify = sys.modules[__name__] = tinify(sys.modules[__name__])
+tinify = sys.modules[__name__] = tinify(sys.modules[__name__])  # type: ignore
 
 from .version import __version__
 
@@ -96,13 +145,13 @@ from .source import Source
 from .errors import *
 
 __all__ = [
-    b'Client',
-    b'Result',
-    b'ResultMeta',
-    b'Source',
-    b'Error',
-    b'AccountError',
-    b'ClientError',
-    b'ServerError',
-    b'ConnectionError'
+    'Client',
+    'Result',
+    'ResultMeta',
+    'Source',
+    'Error',
+    'AccountError',
+    'ClientError',
+    'ServerError',
+    'ConnectionError'
 ]

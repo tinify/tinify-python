@@ -6,7 +6,7 @@ import requests_mock
 
 @pytest.fixture
 def dummy_file():
-    return os.path.join(os.path.dirname(__file__), "examples", "dummy.png")
+    return os.path.join(os.path.dirname(__file__), "..", "examples", "dummy.png")
 
 
 @pytest.fixture(autouse=True)

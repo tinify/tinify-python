@@ -11,7 +11,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "tinify"))
 from version import __version__
 
 install_require = ["requests >= 2.7.0, < 3.0.0"]
-tests_require = ["pytest", "pytest-xdist", "requests-mock"]
+tests_require = ["pytest", "pytest-xdist", "requests-mock", "types-requests"]
+
+if sys.version_info.major > 2:
+    tests_require.append("mypy")
 
 setup(
     name="tinify",
@@ -26,7 +29,7 @@ setup(
     packages=["tinify"],
     package_data={
         "": ["LICENSE", "README.md"],
-        "tinify": ["data/cacert.pem"],
+        "tinify": ["data/cacert.pem", "py.typed"],
     },
     install_requires=install_require,
     tests_require=tests_require,
