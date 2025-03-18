@@ -2,8 +2,8 @@ from typing import Union, Dict, List, Literal, Optional, TypedDict
 
 class ResizeOptions(TypedDict,total=False):
     method: Literal['scale', 'fit', 'cover', 'thumb']
-    width: int
-    height: int
+    width: Optional[int]
+    height: Optional[int]
 
 ConvertTypes = Literal['image/webp', 'image/jpeg', 'image/png', "image/avif", "*/*"]
 class ConvertOptions(TypedDict, total=False):

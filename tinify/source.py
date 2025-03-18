@@ -7,9 +7,9 @@ from tinify.result import Result
 from tinify.result_meta import ResultMeta
 
 try:
-    from typing import Union, Dict, IO, Any, List, Literal, Optional, Unpack, TYPE_CHECKING, overload
+    from typing import Union, Dict, IO, Any, Unpack, TYPE_CHECKING, overload
     if sys.version_info.major > 3 and sys.version_info.minor > 8:
-        from  tinify.typed import *
+        from  tinify._typed import *
 except ImportError:
     TYPE_CHECKING = False # type: ignore
 
