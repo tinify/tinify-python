@@ -17,7 +17,7 @@ tests_require = ["pytest", "pytest-xdist", "requests-mock", "types-requests"]
 if sys.version_info.major > 2:
     tests_require.append("mypy")
 
-with io.open("PYPI.md", encoding="utf-8") as f:
+with io.open("pypi.md", encoding="utf-8") as f:
     long_description = f.read()
 
 
