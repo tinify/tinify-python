@@ -16,6 +16,9 @@ tests_require = ["pytest", "pytest-xdist", "requests-mock", "types-requests"]
 if sys.version_info.major > 2:
     tests_require.append("mypy")
 
+with open("pypi.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
     name="tinify",
     version=__version__,
@@ -23,7 +26,7 @@ setup(
     author="Jacob Middag",
     author_email="info@tinify.com",
     license="MIT",
-    long_description="Python client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.",
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://tinify.com/developers",
     packages=["tinify"],
