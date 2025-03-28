@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import io
 
 try:
     from setuptools import setup
@@ -16,8 +17,9 @@ tests_require = ["pytest", "pytest-xdist", "requests-mock", "types-requests"]
 if sys.version_info.major > 2:
     tests_require.append("mypy")
 
-with open("pypi.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+with io.open("PYPI.md", encoding="utf-8") as f:
+    long_description = f.read()
+
 
 setup(
     name="tinify",
