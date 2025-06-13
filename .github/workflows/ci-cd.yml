@@ -4,19 +4,6 @@ on: [push, pull_request]
 
 permissions: {}
 jobs:
-  Unit_Tests_Py27:
-    runs-on: ubuntu-20.04
-    container:
-      image: python:2.7.18-buster
-    steps:
-    - uses: actions/checkout@v4
-    - name: Install dependencies
-      run: |
-        pip install -r test-requirements.txt -r requirements.txt
-    - name: Test
-      run: |
-        pytest
-
   Unit_tests:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -69,7 +56,7 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
-    needs: [Unit_tests, Mypy, Unit_Tests_Py27]
+    needs: [Unit_tests, Mypy]
     strategy:
       fail-fast: false
       matrix:
