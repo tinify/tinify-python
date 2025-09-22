@@ -1,3 +1,7 @@
+## 1.7.1
+
+* Use only a GET request when no body, otherwise POST
+
 ## 1.7.0
 
 * Added type annotations
