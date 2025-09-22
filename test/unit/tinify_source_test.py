@@ -124,6 +124,26 @@ class TestTinifySourceWithValidApiKey:
     def test_result_should_return_result(self):
         assert isinstance(Source.from_buffer(b"png file").result(), Result)
 
+    def test_result_should_use_get_when_commands_is_empty(self, mock_requests):
+        source = Source(b"png file")
+        source.url = "https://api.tinify.com/some/location"
+        mock_requests.get(
+            "https://api.tinify.com/some/location", content=b"compressed file"
+        )
+        source.result()
+        assert mock_requests.call_count == 1
+        assert mock_requests.last_request.method == "GET"
+
+    def test_result_should_use_post_when_commands_is_not_empty(self, mock_requests):
+        source = Source(b"png file").resize(width=400)
+        source.url = "https://api.tinify.com/some/location"
+        mock_requests.post(
+            "https://api.tinify.com/some/location", content=b"small file"
+        )
+        source.result()
+        assert mock_requests.call_count == 1
+        assert mock_requests.last_request.method == "POST"
+
     def test_preserve_should_return_source(self, mock_requests):
         assert isinstance(
             Source.from_buffer(b"png file").preserve("copyright", "location"), Source

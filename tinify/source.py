@@ -65,7 +65,10 @@ class Source(object):
         return ResultMeta(response.headers)
 
     def result(self):  # type: () -> Result
-        response = tinify.get_client().request('GET', self.url, self.commands)
+        if not self.commands:
+            response = tinify.get_client().request('GET', self.url, self.commands)
+        else:
+            response = tinify.get_client().request('POST', self.url, self.commands)
         return Result(response.headers, response.content)
 
     def to_file(self, path):  # type: (Union[str, IO]) -> None
