@@ -1,22 +1,23 @@
 # Tinify
 
-**Tinify** is the official Python client for the [TinyPNG](https://tinypng.com) and [TinyJPG](https://tinyjpg.com) image compression API, enabling developers to optimize PNG, JPEG, and WebP images programmatically.
+**Tinify** is the official Python client for the [TinyPNG](https://tinypng.com) and [TinyJPG](https://tinyjpg.com/) image compression API, enabling developers to intelligently compress, resize, convert and optimize PNG, APNG, JPEG, WebP and AVIF images programmatically. Read more at [https://tinify.com](https://tinify.com/developers).
 
 [![PyPI version](https://badge.fury.io/py/tinify.svg)](https://badge.fury.io/py/tinify)
 [![Build Status](https://github.com/tinify/tinify-python/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tinify/tinify-python/)
+
 ## Features
 
-- Compress images, reducing file size by 50-80% while preserving visual quality
+- Compress and optimize images, reducing file size by 50-80% while preserving visual quality
 - Resize and crop images with smart compression
-- Convert between PNG, JPEG, and WebP formats
+- Convert between PNG, JPEG, WebP and AVIF formats
 - Preserve metadata (optional)
+- Upload to storage providers like Amazon S3, Google cloud storage.
 - Apply visual transformations with the Tinify API
-- Supports asynchronous operations
 - Comprehensive error handling
 
 ## Installation
 
-```python
+```bash
 pip install tinify
 ```
 
@@ -75,6 +76,15 @@ tinify.from_file("image.png").convert(
 ).to_file("image.webp")
 ```
 
+```python
+# Convert to smallest format
+converted = tinify.from_file("image.png").convert(
+    type=["image/webp", "image/webp"]
+)
+extension = converted.result().extension
+converted.to_file("image." + extension)
+```
+
 ### Compression Count Monitoring
 
 ```python
@@ -111,7 +121,7 @@ except Exception as e:
 
 ## Requirements
 
-- Python 3.6+
+- Python 2.7+
 - Requests library
 
 ## Documentation
@@ -124,4 +134,4 @@ This software is licensed under the MIT License. See [LICENSE](https://github.co
 
 ## Support
 
-For issues and feature requests, please use our [GitHub Issues](https://github.com/tinify/tinify-python/issues) page.
+For issues and feature requests, please use our [GitHub Issues](https://github.com/tinify/tinify-python/issues) page or contact us at [support@tinify.com](mailto:support@tinify.com)
