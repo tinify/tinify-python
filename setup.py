@@ -17,9 +17,8 @@ tests_require = ["pytest", "pytest-xdist", "requests-mock", "types-requests"]
 if sys.version_info.major > 2:
     tests_require.append("mypy")
 
-with io.open("pypi.md", encoding="utf-8") as f:
+with io.open("README.md", encoding="utf-8") as f:
     long_description = f.read()
-
 
 setup(
     name="tinify",
@@ -33,7 +32,7 @@ setup(
     url="https://tinify.com/developers",
     packages=["tinify"],
     package_data={
-        "": ["LICENSE", "README.md", "pypi.md"],
+        "": ["LICENSE", "README.md"],
         "tinify": ["data/cacert.pem", "py.typed"],
     },
     install_requires=install_require,
