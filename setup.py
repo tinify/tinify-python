@@ -33,7 +33,7 @@ setup(
     url="https://tinify.com/developers",
     packages=["tinify"],
     package_data={
-        "": ["LICENSE", "README.md"],
+        "": ["LICENSE", "README.md", "pypi.md"],
         "tinify": ["data/cacert.pem", "py.typed"],
     },
     install_requires=install_require,
