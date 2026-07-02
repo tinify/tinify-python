@@ -5,7 +5,7 @@ class ResizeOptions(TypedDict,total=False):
     width: Optional[int]
     height: Optional[int]
 
-ConvertTypes = Literal['image/webp', 'image/jpeg', 'image/png', "image/avif", "*/*"]
+ConvertTypes = Literal['image/webp', 'image/jpeg', 'image/png', "image/avif", "image/jxl", "*/*"]
 class ConvertOptions(TypedDict, total=False):
     type: Union[ConvertTypes, List[ConvertTypes]]
 

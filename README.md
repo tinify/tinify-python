@@ -96,7 +96,7 @@ tinify.from_file("image.png").convert(
 ```python
 # Convert to smallest format
 converted = tinify.from_file("image.png").convert(
-    type=["image/webp", "image/webp"]
+    type=["image/webp", "image/avif", "image/jxl"]
 )
 extension = converted.result().extension
 converted.to_file("image." + extension)
