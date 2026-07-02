@@ -1,3 +1,8 @@
+## 1.7.2
+
+* Add JXL to supported image types
+* Update package classifier to support python 3.14
+
 ## 1.7.1
 
 * Use only a GET request when no body, otherwise POST
