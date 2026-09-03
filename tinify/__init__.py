@@ -138,6 +138,7 @@ tinify = sys.modules[__name__] = tinify(sys.modules[__name__])  # type: ignore
 
 from .version import __version__
 
+from ._format import Format
 from .client import Client
 from .result_meta import ResultMeta
 from .result import Result
@@ -146,6 +147,7 @@ from .errors import *
 
 __all__ = [
     'Client',
+    'Format',
     'Result',
     'ResultMeta',
     'Source',
