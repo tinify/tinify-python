@@ -5,6 +5,7 @@ import sys
 import os
 import platform
 import requests
+from requests.structures import CaseInsensitiveDict
 import requests.exceptions
 from requests.compat import json # type: ignore
 import traceback
@@ -31,9 +32,9 @@ class Client(object):
         if proxy:
             self.session.proxies = {'https': proxy}
         self.session.auth = ('api', key)
-        self.session.headers = {
+        self.session.headers = CaseInsensitiveDict({
             'user-agent': self.USER_AGENT + ' ' + app_identifier if app_identifier else self.USER_AGENT,
-        }
+        })
         self.session.verify = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cacert.pem')
 
     def __enter__(self):  # type: () -> Client
