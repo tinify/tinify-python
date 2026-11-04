@@ -7,7 +7,7 @@
 
 # Tinify API client for Python
 
-**Tinify** is the official Python client for the [TinyPNG](https://tinypng.com) and [TinyJPG](https://tinyjpg.com/) image compression API, enabling developers to intelligently compress, resize, convert and optimize PNG, APNG, JPEG, WebP and AVIF images programmatically. Read more at [https://tinify.com](https://tinify.com/developers).
+**Tinify** is the official Python client for the [TinyPNG](https://tinypng.com) and [TinyJPG](https://tinyjpg.com/) image compression API, enabling developers to intelligently compress, resize, convert and optimize PNG, APNG, JPEG, WebP, AVIF and JPEG XL images programmatically. Read more at [https://tinify.com](https://tinify.com/developers).
 
 
 [Go to the full documentation for the Python client](https://tinypng.com/developers/reference/python).
@@ -16,7 +16,7 @@
 
 - Compress and optimize images, reducing file size by 50-80% while preserving visual quality
 - Resize and crop images with smart compression
-- Convert between PNG, JPEG, WebP and AVIF formats
+- Convert between PNG, JPEG, WebP, AVIF and JPEG XL formats
 - Preserve metadata (optional)
 - Upload to storage providers like Amazon S3, Google cloud storage.
 - Apply visual transformations with the Tinify API
@@ -89,18 +89,21 @@ tinify.from_file("original.jpg").resize(
 ```python
 # Convert to WebP format
 tinify.from_file("image.png").convert(
-    type=["image/webp"]
+    type=tinify.Format.WEBP
 ).to_file("image.webp")
 ```
 
 ```python
 # Convert to smallest format
+# (tinify.Format.WEBP, PNG, JPEG, JPG, AVIF, JXL and ANY)
 converted = tinify.from_file("image.png").convert(
-    type=["image/webp", "image/avif", "image/jxl"]
+    type=[tinify.Format.WEBP, tinify.Format.AVIF, tinify.Format.JXL]
 )
 extension = converted.result().extension
 converted.to_file("image." + extension)
 ```
+
+The constants are plain strings, so `type="image/webp"` keeps working.
 
 ### Compression Count Monitoring
 
