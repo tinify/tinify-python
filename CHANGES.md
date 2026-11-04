@@ -1,3 +1,8 @@
+## 1.8.0
+
+* Added `tinify.Format` constants for the media types `convert` accepts.
+* Added the missing `image/jpg` media type to the `convert` type hints.
+
 ## 1.7.2
 
 * Add JXL to supported image types
