@@ -2,7 +2,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import sys
-import os
 import platform
 import requests
 from requests.structures import CaseInsensitiveDict
@@ -35,7 +34,6 @@ class Client(object):
         self.session.headers = CaseInsensitiveDict({
             'user-agent': self.USER_AGENT + ' ' + app_identifier if app_identifier else self.USER_AGENT,
         })
-        self.session.verify = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cacert.pem')
 
     def __enter__(self):  # type: () -> Client
         return self
