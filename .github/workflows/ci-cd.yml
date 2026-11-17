@@ -15,6 +15,16 @@ jobs:
           "pypy-2.7", "pypy-3.11"
         ]
         os: [ubuntu-latest, macOS-latest, windows-latest]
+        exclude:
+        - python-version: "3.8"
+          os: ubuntu-latest
+        - python-version: "3.9"
+          os: ubuntu-latest
+        include:
+        - python-version: "3.8"
+          os: ubuntu-24.04
+        - python-version: "3.9"
+          os: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v3
