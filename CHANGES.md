@@ -1,3 +1,9 @@
+## 1.9.0
+
+* Verify the API's TLS certificate with the `certifi` CA bundle (the
+  `requests` default) instead of a CA bundle shipped with this package.
+* Require `requests` 2.16.0 or newer.
+
 ## 1.8.0
 
 * Added `tinify.Format` constants for the media types `convert` accepts.

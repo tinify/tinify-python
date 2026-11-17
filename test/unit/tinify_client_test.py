@@ -84,6 +84,21 @@ class TestClientRequestWhenValid:
         assert tinify.compression_count == 12
 
 
+class TestClientCertificateVerification:
+    def test_should_verify_with_default_ca_bundle(
+        self, mock_requests, client, monkeypatch
+    ):
+        monkeypatch.delenv("REQUESTS_CA_BUNDLE", raising=False)
+        monkeypatch.delenv("CURL_CA_BUNDLE", raising=False)
+        mock_requests.get(
+            "https://api.tinify.com/", headers={"compression-count": "12"}
+        )
+
+        client.request("GET", "/")
+
+        assert mock_requests.last_request.verify is True
+
+
 class TestClientRequestWhenValidWithAppId:
     def test_should_issue_request_with_user_agent(self, mock_requests):
         mock_requests.get(
