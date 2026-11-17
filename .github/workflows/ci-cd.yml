@@ -79,7 +79,7 @@ jobs:
       run: |
         pytest test/integration.py
 
-  Publish:
+  Build:
     if: |
        github.repository == 'tinify/tinify-python' &&
        startsWith(github.ref, 'refs/tags') &&
@@ -121,12 +121,33 @@ jobs:
       run: |
         python -m venv wheel_env
         ./wheel_env/bin/pip install dist/tinify*.whl
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
+        if-no-files-found: error
+
+  Publish:
+    timeout-minutes: 10
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://pypi.org/project/tinify/${{ github.ref_name }}/
+    permissions:
+      id-token: write
+    steps:
+    - name: Download the distribution packages
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
     - name: Publish package to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: __token__
-        password: ${{ secrets.PYPI_ACCESS_TOKEN }}
         # Use the test repository for testing the publish feature
-        # repository_url: https://test.pypi.org/legacy/
-        packages_dir: dist/
-        print_hash: true
+        # repository-url: https://test.pypi.org/legacy/
+        packages-dir: dist/
+        attestations: true
+        print-hash: true
